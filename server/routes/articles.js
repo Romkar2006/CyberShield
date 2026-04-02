@@ -137,7 +137,7 @@ router.post('/generate', verifyAuth, async (req, res) => {
 
     // DIRECT AXIOS HANDSHAKE (Immune to SDK versioning/authorization tier mismatches)
     // Expanded list including 8B models for higher reliability/quota availability
-    const modelSequence = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-2.0-flash", "gemini-1.5-flash-latest"];
+    const modelSequence = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro", "gemini-2.0-flash", "gemini-1.5-flash-latest", "gemini-pro"];
     let content = "";
 
 

@@ -415,22 +415,38 @@ export const KnowledgeHub = () => {
       {/* AI GENERATION MODAL */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className={`fixed inset-0 z-[120] flex items-center justify-center ${isFullscreen ? 'p-0' : 'p-6'}`}>
+          <div className={`fixed inset-0 z-[9999] flex items-center justify-center ${isFullscreen ? 'p-0' : 'p-2 sm:p-6'}`}>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => !isGenerating && setIsModalOpen(false)} className="absolute inset-0 bg-[#0A0F1E]/95 backdrop-blur-3xl" />
             
             <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} 
-              className={`relative bg-[#0A0F1E] overflow-hidden flex flex-col md:flex-row shadow-[0_50px_100px_rgba(0,0,0,0.8)] transition-all duration-500 border border-white/10 ${isFullscreen ? 'w-full h-full rounded-none' : 'w-[96%] sm:w-[94%] max-w-[1500px] h-full sm:h-[88vh] rounded-none sm:rounded-[2.5rem]'}`}>
-              
-              {/* Sidebar: Hidden on mobile header, can be toggled or just shown below */}
-              <div className="w-full md:w-64 bg-[#0D1526]/80 backdrop-blur-3xl border-b md:border-b-0 md:border-r border-white/5 flex flex-row md:flex-col p-4 sm:p-6 shrink-0 relative overflow-hidden items-center md:items-stretch justify-between md:justify-start">
-                 <div className="flex items-center gap-3 sm:gap-4 md:mb-10 relative z-10 shrink-0">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#00D4FF]/10 flex items-center justify-center text-[#00D4FF] border border-[#00D4FF]/20">
-                       <Shield size={18} className="sm:size-5" fill="currentColor" />
+              className={`relative bg-[#0A0F1E] overflow-hidden flex flex-col md:flex-row shadow-[0_50px_100px_rgba(0,0,0,0.8)] transition-all duration-500 border border-white/10 ${isFullscreen ? 'w-full h-full rounded-none' : 'w-[98%] sm:w-[94%] max-w-[1500px] h-[95vh] sm:h-[88vh] rounded-2xl sm:rounded-[2.5rem]'}`}>
+                          {/* Sidebar Navigation */}
+              <div className="w-full md:w-64 bg-[#0D1526] backdrop-blur-3xl border-b md:border-b-0 md:border-r border-white/10 flex flex-row md:flex-col p-3 sm:p-4 md:p-6 shrink-0 relative overflow-hidden items-center md:items-stretch justify-between md:justify-start gap-4">
+                 <div className="flex items-center gap-2 sm:gap-4 md:mb-10 relative z-10 shrink-0">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#00D4FF]/10 flex items-center justify-center text-[#00D4FF] border border-[#00D4FF]/20 shadow-[0_0_15px_rgba(0,212,255,0.1)]">
+                       <Shield size={16} className="sm:size-5" fill="currentColor" />
                     </div>
-                    <div>
+                    <div className="hidden min-[350px]:block">
                        <h2 className="text-[9px] sm:text-[10px] font-black text-white tracking-widest leading-none uppercase">EDITOR HUB</h2>
-                       <p className="text-[7px] sm:text-[8px] text-[#00D4FF] font-black uppercase tracking-[0.3em] mt-1 italic hidden sm:block">Active Node</p>
+                       <p className="text-[7px] text-[#00D4FF] font-black uppercase tracking-[0.3em] mt-1 italic hidden sm:block">Active Node</p>
                     </div>
+                 </div>
+
+                 {/* Mobile Navigation Pills */}
+                 <div className="flex md:hidden items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/5">
+                    {[
+                      { id: 'Drafts', icon: <Edit3 size={14} /> },
+                      { id: 'My Articles', icon: <FileText size={14} /> },
+                      { id: 'Trace Audits', icon: <Activity size={14} /> }
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveSidebarTab(tab.id)}
+                        className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${activeSidebarTab === tab.id ? 'bg-[#00D4FF] text-[#0A0F1E] shadow-[0_0_10px_rgba(0,212,255,0.4)]' : 'text-slate-500 hover:text-white'}`}
+                      >
+                        {tab.id === 'My Articles' ? <FileText size={14} /> : tab.icon}
+                      </button>
+                    ))}
                  </div>
 
                   <div className="hidden md:block md:space-y-10 flex-1 relative z-10">
@@ -457,33 +473,30 @@ export const KnowledgeHub = () => {
                        />
                      </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 md:block md:space-y-4 md:mt-auto relative z-10 md:pt-10 md:border-t md:border-white/5">
                     <button 
                       onClick={handleSave} 
                       disabled={isSaving || !generatedContent} 
-                      className={`w-36 md:w-full py-3 md:py-4 font-black text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.3em] rounded-xl sm:rounded-2xl transition-all shadow-xl flex items-center justify-center gap-2 sm:gap-3 active:scale-95 ${!generatedContent ? 'bg-white/5 text-slate-600 cursor-not-allowed border border-white/5' : 'bg-[#00D4FF] text-[#0A0F1E] hover:bg-white shadow-[#00D4FF]/20'}`}
+                      className={`w-36 md:w-full py-2.5 md:py-4 font-black text-[8px] sm:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.3em] rounded-xl sm:rounded-2xl transition-all shadow-xl flex items-center justify-center gap-2 sm:gap-3 active:scale-95 ${!generatedContent ? 'bg-white/5 text-slate-600 cursor-not-allowed border border-white/5' : 'bg-[#00D4FF] text-[#0A0F1E] hover:bg-white shadow-[#00D4FF]/20'}`}
                     >
-                      {isSaving ? <Loader2 className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
-                      {isSaving ? 'SYNCING' : 'Publish'}
+                      {isSaving ? <Loader2 className="animate-spin" size={12} /> : <CheckCircle2 size={12} />}
+                      {isSaving ? 'SYNC' : 'Publish'}
                     </button>
-                    <button onClick={() => !isGenerating && setIsModalOpen(false)} className="px-4 md:w-full py-3 md:py-4 bg-white/5 text-slate-500 hover:text-red-400 font-black text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.3em] rounded-xl sm:rounded-2xl border border-white/5 hover:border-red-400/20 transition-all md:mt-2">
-                      <X className="md:hidden" size={14} />
-                      <span className="hidden md:inline">Discard Draft</span>
-                    </button>
-                 </div>
+                  </div>
               </div>
 
+              {/* Main Content Area */}
               <div className="flex-1 flex flex-col min-w-0 bg-[#0A0F1E]">
-                <div className="h-20 px-8 flex items-center justify-between shrink-0 border-b border-white/5 relative bg-[#0D1526]/50">
-                  <div className="flex items-center gap-5">
-                     <button onClick={() => setIsFullscreen(!isFullscreen)} className="w-10 h-10 flex items-center justify-center hover:bg-white/5 rounded-xl transition text-slate-500 hover:text-[#00D4FF]">
-                        {isFullscreen ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
+                <div className="h-14 sm:h-20 px-4 sm:px-8 flex items-center justify-between shrink-0 border-b border-white/5 relative bg-[#0D1526]/50">
+                  <div className="flex items-center gap-3 sm:gap-5">
+                     <button onClick={() => setIsFullscreen(!isFullscreen)} className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-white/5 rounded-xl transition text-slate-500 hover:text-[#00D4FF]">
+                        {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                      </button>
-                     <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em] italic">Guardian Intelligence Node</p>
+                     <p className="text-[8px] sm:text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] min-[400px]:tracking-[0.5em] italic">Intelligence Node</p>
                   </div>
                   
-                  <div className="flex items-center gap-8">
+                  <div className="flex items-center gap-3 sm:gap-8">
                     <div className="relative hidden sm:block">
                       <input type="file" id="cover-upload" className="hidden" accept="image/*" 
                         onClick={(e) => (e.currentTarget.value = '')}
@@ -524,17 +537,18 @@ export const KnowledgeHub = () => {
                       </label>
                     </div>
 
-                    <button onClick={handleSave} disabled={isSaving || !generatedContent} className="bg-[#00D4FF] hover:bg-white text-[#0A0F1E] font-black text-[10px] uppercase tracking-[0.3em] px-10 py-4 rounded-xl shadow-2xl shadow-[#00D4FF]/20 transition-all active:scale-95 flex items-center gap-3">
-                       {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} fill="currentColor" />}
-                       {isSaving ? 'Processing' : 'Publish'}
+                    <button onClick={handleSave} disabled={isSaving || !generatedContent} className="bg-[#00D4FF] hover:bg-white text-[#0A0F1E] font-black text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.3em] px-4 sm:px-10 py-2.5 sm:py-4 rounded-lg sm:rounded-xl shadow-2xl shadow-[#00D4FF]/20 transition-all active:scale-95 flex items-center gap-2 sm:gap-3">
+                       {isSaving ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} fill="currentColor" />}
+                       <span className="mt-0.5">{isSaving ? 'Saving' : 'Publish'}</span>
                     </button>
-                    <div className="w-10 h-10 flex items-center justify-center text-slate-600 hover:text-white cursor-pointer transition border border-white/5 rounded-xl hover:bg-red-500/10" onClick={() => !isGenerating && setIsModalOpen(false)}>
-                       <X size={20} />
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-slate-600 hover:text-white cursor-pointer transition border border-white/5 rounded-lg sm:rounded-xl hover:bg-red-500/10" onClick={() => !isGenerating && setIsModalOpen(false)}>
+                       <X size={18} />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex-1 relative overflow-hidden">
+                <div className="flex-1 relative overflow-hidden flex flex-col">
+                   <div className="flex-1 overflow-y-auto custom-scrollbar">
                    {activeSidebarTab === 'Drafts' ? (
                      !generatedContent ? (
                         <div className="h-full flex flex-col items-center justify-center p-8 max-w-3xl mx-auto relative w-full">
@@ -542,22 +556,22 @@ export const KnowledgeHub = () => {
                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#00D4FF]/5 blur-[120px] rounded-full pointer-events-none" />
                            
                            {/* Main Assistant Terminal Card */}
-                           <div className="relative w-full bg-gradient-to-b from-[#0D1526]/90 to-[#0A0F1E] backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                           <div className="relative w-full bg-gradient-to-b from-[#0D1526]/90 to-[#0A0F1E] backdrop-blur-2xl border border-white/10 rounded-[1.5rem] sm:rounded-[2.5rem] p-5 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                              
                              {/* Terminal Header */}
-                             <div className="flex items-center justify-between mb-10 pb-6 border-b border-white/5 relative">
+                             <div className="flex items-center justify-between mb-6 sm:mb-10 pb-4 sm:pb-6 border-b border-white/5 relative">
                                 <div className="absolute bottom-0 left-0 w-1/3 h-[1px] bg-gradient-to-r from-[#00D4FF]/50 to-transparent" />
                                 
-                                <div className="flex items-center gap-5">
+                                <div className="flex items-center gap-3 sm:gap-5">
                                    <div className="relative">
-                                     <div className="absolute inset-0 bg-[#00D4FF]/20 blur-md rounded-2xl" />
-                                     <div className="relative w-14 h-14 bg-[#0A0F1E] rounded-2xl border border-[#00D4FF]/30 flex items-center justify-center text-[#00D4FF] shadow-[0_0_15px_rgba(0,212,255,0.2)]">
-                                       <Terminal size={24} />
+                                     <div className="absolute inset-0 bg-[#00D4FF]/20 blur-md rounded-xl sm:rounded-2xl" />
+                                     <div className="relative w-10 h-10 sm:w-14 sm:h-14 bg-[#0A0F1E] rounded-xl sm:rounded-2xl border border-[#00D4FF]/30 flex items-center justify-center text-[#00D4FF] shadow-[0_0_15px_rgba(0,212,255,0.2)]">
+                                       <Terminal size={20} className="sm:size-6" />
                                      </div>
                                    </div>
                                    <div>
-                                      <h3 className="text-white font-black text-2xl tracking-tight leading-none uppercase italic">SUBMIT <span className="text-[#00D4FF] not-italic">your article</span></h3>
-                                      <p className="text-[#64748B] text-[10px] font-black uppercase tracking-widest mt-1">Neural AI Article Generation Chatbot</p>
+                                      <h3 className="text-white font-black text-lg sm:text-2xl tracking-tight leading-none uppercase italic">SUBMIT <span className="text-[#00D4FF] not-italic">INTEL</span></h3>
+                                      <p className="text-[#64748B] text-[8px] sm:text-[10px] font-black uppercase tracking-widest mt-1">Neural AI Generation Node</p>
                                    </div>
                                 </div>
                                 <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
@@ -567,11 +581,11 @@ export const KnowledgeHub = () => {
                              </div>
 
                              {/* Terminal Body */}
-                             <div className="mb-10 text-center">
-                               <h2 className="text-3xl md:text-4xl font-black text-white tracking-widest mb-4 italic uppercase leading-tight">
-                                 Describe your <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00D4FF] to-violet-400">Intelligence</span>
+                             <div className="mb-8 sm:mb-10 text-center">
+                               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-widest mb-3 sm:mb-4 italic uppercase leading-tight">
+                                 Describe your <br className="sm:hidden" /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00D4FF] to-violet-400">Intelligence</span>
                                </h2>
-                               <p className="text-slate-400 max-w-lg mx-auto text-sm font-medium leading-[1.8]">
+                               <p className="text-slate-400 max-w-lg mx-auto text-[11px] sm:text-sm font-medium leading-[1.6] sm:leading-[1.8]">
                                  Briefly describe your case, a specific threat, or a legal protocol. Our neural AI chatbot will autonomously synthesize a 1200-word professional dossier for the Global Hub.
                                </p>
                              </div>
@@ -712,6 +726,7 @@ export const KnowledgeHub = () => {
                          </div>
                       </div>
                    )}
+                   </div>
                 </div>
               </div>
             </motion.div>
