@@ -120,11 +120,11 @@ export const FileComplaint = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="bg-[#0D1526] border border-white/[0.08] rounded-2xl p-8 md:p-10 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)]"
+              className="bg-[#0D1526] border border-white/[0.08] rounded-2xl p-5 sm:p-8 md:p-10 shadow-[0_30px_60px_-12px_rgba(0,0,0,0.5)]"
             >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pb-6 border-b border-white/[0.05]">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b border-white/[0.05]">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-white/[0.03] border border-white/[0.05] rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-white/[0.03] border border-white/[0.05] rounded-xl flex items-center justify-center shrink-0">
                     <User className="text-[#00D4FF]" size={22} />
                   </div>
                   <div>
@@ -132,7 +132,7 @@ export const FileComplaint = () => {
                     <p className="text-xs text-[#64748B]">Verification details for official logging</p>
                   </div>
                 </div>
-                <div className="bg-[#1E293B] px-3 py-1.5 rounded-lg border border-white/[0.05] flex items-center gap-2">
+                <div className="bg-[#1E293B] px-3 py-1.5 rounded-lg border border-white/[0.05] flex items-center gap-2 self-start md:self-auto">
                   <Shield size={14} className="text-[#22C55E]" />
                   <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">End-to-End Encrypted</span>
                 </div>

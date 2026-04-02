@@ -1,11 +1,11 @@
 import express from 'express';
 import { nanoid } from 'nanoid';
-import { Complaint } from '../models/index.js';
+import { Complaint, User } from '../models/index.js';
 import { detectLanguage, translateToEnglish } from '../utils/langDetect.js';
 import { classifyWithZephyr, calculateConfidence, getVictimGuidance } from '../utils/huggingface.js';
 import { getBnsSections, getDepartment, getCityCoords } from '../utils/bnsMapper.js';
 import { extractAndStoreEntities } from '../utils/patternDetector.js';
-import { sendWelcomeEmail, sendFirEmail } from '../utils/emailSender.js';
+import { sendWelcomeEmail, sendFirEmail, sendOfficerAssignmentEmail } from '../utils/emailSender.js';
 import { verifyAdmin, verifyUser } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -74,12 +74,19 @@ router.post('/classify', async (req, res) => {
       }]
     });
 
-    // 13. Fire async operations — do NOT await them (don't block response)
-    extractAndStoreEntities(cleanText, ref_no).catch(console.error);
+    // 13. Async operations — fire them and catch separately for better debug visibility
+    extractAndStoreEntities(cleanText, ref_no).catch(err => console.error(`[ComplaintRoute] Entity extraction failed for ${ref_no}:`, err));
+    
+    // We await these in production if we suspect silent failures, 
+    // although this adds 1-2 seconds to the response time.
     Promise.all([
       sendWelcomeEmail(email, { ref_no, categories, severity, name }),
       sendFirEmail(email, { ref_no, categories, severity, department, bns_sections, original_text: cleanText, translated_text: english_text, name, city: city || '' })
-    ]).catch(console.error);
+    ]).then(() => {
+      console.log(`[ComplaintRoute] All emails dispatched for ${ref_no}`);
+    }).catch(err => {
+      console.error(`[ComplaintRoute] Email delivery failed for ${ref_no}:`, err);
+    });
 
     // 14. Return the full complaint document augmented with meta-stats for the result page
     return res.json({
@@ -143,6 +150,24 @@ router.post('/update', verifyAdmin, async (req, res) => {
     );
 
     if (!updated) return res.status(404).json({ error: 'Case not found' });
+
+    // Trigger Assignment Email to Officer
+    if (assigned_officer) {
+      User.findOne({ name: assigned_officer, role: 'admin' })
+        .then(officer => {
+          if (officer && officer.email) {
+            sendOfficerAssignmentEmail(officer.email, {
+              ref_no: updated.ref_no,
+              severity: updated.severity,
+              name: updated.victim_name,
+              department: updated.department,
+              categories: updated.categories
+            }).catch(err => console.error(`[AssignmentNotify] Failed for ${ref_no}:`, err));
+          }
+        })
+        .catch(err => console.error(`[AssignmentNotify] DB Lookup failed for ${assigned_officer}:`, err));
+    }
+
     res.json(updated);
   } catch (err) {
     console.error('Update complaint error:', err);

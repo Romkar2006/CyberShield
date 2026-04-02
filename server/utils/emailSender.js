@@ -2,18 +2,35 @@ import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
 
+// Validate credentials before creating transporter
+if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
+  console.warn('[EmailSender] GMAIL_USER or GMAIL_PASS not found in .env. Emails will fail to send.');
+}
+
 // ── Transporter — Dedicated CyberShield Portal Mailer ────────
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.GMAIL_USER,       // omkarraichur0102@gmail.com (SMTP auth)
-    pass: process.env.GMAIL_PASS        // App password
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
+  }
+});
+
+// Verify connection configuration
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('[EmailSender] SMTP Connection Error:', error);
+  } else {
+    console.log('[EmailSender] SMTP Server is ready to take messages');
   }
 });
 
 // Sender displays as official portal address
-const SENDER_ADDRESS = process.env.ADMIN_EMAIL || 'noreplyyourcyberportal@gmail.com';
+// SMTP Auth (GMAIL_USER) must match or authorize the 'From' address.
+const SENDER_ADDRESS = process.env.GMAIL_USER;
 const SENDER_DISPLAY = `CyberShield | Ministry of Home Affairs <${SENDER_ADDRESS}>`;
+
+console.log(`[EmailSender] Initialized with sender: ${SENDER_ADDRESS}`);
 
 // ── Severity colour helpers ───────────────────────────────────
 function severityColor(severity) {
@@ -535,6 +552,53 @@ export async function sendOtpEmail(to, otp) {
     replyTo: SENDER_ADDRESS,
     to,
     subject: `[CyberShield Security] Your OTP: ${otp} — Do Not Share`,
+    html
+  });
+}
+
+// ── Officer Assignment Email ───────────────────────────────
+export async function sendOfficerAssignmentEmail(officerEmail, data) {
+  const { ref_no, severity, name, department, categories } = data;
+  const sev = severityColor(severity);
+
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0; padding:0; background:#0F172A; font-family:Arial,sans-serif; color:#E2E8F0;">
+  <div style="max-width:600px; margin:20px auto; background:#0D1526; border:1px solid #1E293B; border-radius:8px; overflow:hidden;">
+    <div style="background:#1E293B; padding:20px; border-bottom:3px solid #00D4FF; text-align:center;">
+      <div style="font-size:10px; color:#64748B; letter-spacing:2px; margin-bottom:5px;">NATIONAL CYBER CRIME PORTAL</div>
+      <div style="font-size:18px; font-weight:900; color:#00D4FF;">NEW CASE ASSIGNED</div>
+    </div>
+    <div style="padding:30px;">
+      <p style="font-size:14px; color:#94A3B8;">Officer,</p>
+      <p style="font-size:15px; line-height:1.6;">You have been assigned as the <strong>Investigating Officer</strong> for a new cybercrime case. Please review the details and initiate investigation immediately.</p>
+      
+      <div style="background:#0F172A; border-radius:6px; padding:20px; margin:25px 0; border-left:4px solid ${sev.badge};">
+        <table width="100%">
+          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Reference No</td><td style="font-weight:700; color:#00D4FF; text-align:right;">${ref_no}</td></tr>
+          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Priority</td><td style="color:${sev.badge}; font-weight:800; text-align:right;">${severity.toUpperCase()}</td></tr>
+          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Category</td><td style="text-align:right;">${categories.join(' / ')}</td></tr>
+          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Complainant</td><td style="text-align:right;">${name}</td></tr>
+          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Department</td><td style="text-align:right;">${department}</td></tr>
+        </table>
+      </div>
+
+      <div style="text-align:center; margin-top:30px;">
+        <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/admin" style="background:#00D4FF; color:#0A0F1E; padding:12px 24px; border-radius:6px; text-decoration:none; font-weight:900; font-size:12px; text-transform:uppercase;">Open Admin Dashboard</a>
+      </div>
+    </div>
+    <div style="background:#0F172A; padding:15px; text-align:center; font-size:10px; color:#334155; border-top:1px solid #1E293B;">
+      CONFIDENTIAL GOVT PROPERTY &copy; ${new Date().getFullYear()} CyberShield India
+    </div>
+  </div>
+</body>
+</html>`;
+
+  await transporter.sendMail({
+    from: SENDER_DISPLAY,
+    to: officerEmail,
+    subject: `[NEW CASE] ${severity} Priority assigned: ${ref_no} | CyberShield India`,
     html
   });
 }

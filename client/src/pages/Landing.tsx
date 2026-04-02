@@ -127,15 +127,15 @@ export const Landing = () => {
         <section className="min-h-[calc(100vh-64px)] w-full max-w-[1280px] px-8 flex items-center py-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full items-center">
             {/* LEFT HALF */}
-            <div className="flex flex-col items-start z-10 w-full pt-8 lg:pt-0">
-              <div className="bg-cyan/10 border border-cyan dark:border-cyan-dark text-cyan dark:text-cyan-dark rounded-full px-3 py-1 text-xs tracking-widest uppercase mb-6 font-semibold">
-                AI-POWERED · BNS 2024
+            <div className="flex flex-col items-center lg:items-start z-10 w-full pt-8 lg:pt-0 text-center lg:text-left">
+              <div className="bg-cyan/10 border border-cyan dark:border-cyan-dark text-cyan dark:text-cyan-dark rounded-full px-4 py-1 text-[10px] tracking-widest uppercase mb-6 font-bold">
+                AI-Powered · BNS 2024
               </div>
-              <h1 className="text-5xl font-bold tracking-tight leading-tight text-light-text-primary dark:text-dark-text-primary m-0 p-0 break-words">
-                AI-Powered Cybercrime<br />
-                <span className="text-cyan dark:text-cyan-dark">Protection for Every Indian</span>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] text-light-text-primary dark:text-dark-text-primary m-0 p-0 break-words">
+                AI-Powered Cybercrime<br className="hidden sm:block" />
+                <span className="text-cyan dark:text-cyan-dark"> Protection for Every Indian</span>
               </h1>
-              <p className="text-light-text-secondary dark:text-dark-text-secondary text-lg mt-4 max-w-md leading-relaxed font-medium">
+              <p className="text-light-text-secondary dark:text-dark-text-secondary text-base md:text-lg mt-6 max-w-md leading-relaxed font-medium mx-auto lg:mx-0">
                 File complaints in Hindi, Hinglish, or English. Get your FIR in 15 seconds.
               </p>
 
@@ -143,40 +143,40 @@ export const Landing = () => {
                 <span ref={typedRef} className="text-cyan dark:text-cyan-dark text-sm font-mono tracking-tight"></span>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 mt-8">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mt-10 w-full sm:w-auto">
                 {isUserLoggedIn() ? (
-                  <Link to="/complaint" className="bg-cyan dark:bg-cyan-dark text-light-text-inverse dark:text-dark-text-inverse px-8 py-3 rounded-lg font-bold hover:brightness-110 shadow-[0_4px_14px_0_rgb(0,212,255,0.39)] dark:shadow-[0_0_24px_rgba(0,212,255,0.4)] transition-all flex items-center gap-2 whitespace-nowrap lg:text-base">
+                  <Link to="/complaint" className="bg-cyan dark:bg-cyan-dark text-light-text-inverse dark:text-dark-text-inverse px-8 py-4 rounded-xl font-bold hover:brightness-110 shadow-[0_4px_14px_0_rgb(0,212,255,0.39)] dark:shadow-[0_0_24px_rgba(0,212,255,0.4)] transition-all flex items-center justify-center gap-2 whitespace-nowrap text-sm md:text-base">
                     File a Complaint →
                   </Link>
                 ) : (
                   <button
                     onClick={showAuthModal}
-                    className="bg-cyan dark:bg-cyan-dark text-light-text-inverse dark:text-dark-text-inverse px-8 py-3 rounded-lg font-bold hover:brightness-110 shadow-[0_4px_14px_0_rgb(0,212,255,0.39)] dark:shadow-[0_0_24px_rgba(0,212,255,0.4)] transition-all flex items-center gap-2 whitespace-nowrap lg:text-base"
+                    className="bg-cyan dark:bg-cyan-dark text-light-text-inverse dark:text-dark-text-inverse px-8 py-4 rounded-xl font-bold hover:brightness-110 shadow-[0_4px_14px_0_rgb(0,212,255,0.39)] dark:shadow-[0_0_24px_rgba(0,212,255,0.4)] transition-all flex items-center justify-center gap-2 whitespace-nowrap text-sm md:text-base"
                   >
                     File a Complaint →
                   </button>
                 )}
 
                 {isUserLoggedIn() ? (
-                  <Link to="/status" className="bg-transparent border border-light-border-default dark:border-dark-border-default text-light-text-primary dark:text-dark-text-secondary px-8 py-3 rounded-lg font-medium hover:border-cyan hover:text-cyan dark:hover:border-cyan-dark dark:hover:text-cyan-dark transition-all whitespace-nowrap shadow-sm dark:shadow-none lg:text-base">
+                  <Link to="/status" className="bg-transparent border border-light-border-default dark:border-dark-border-default text-light-text-primary dark:text-dark-text-secondary px-8 py-4 rounded-xl font-medium hover:border-cyan hover:text-cyan dark:hover:border-cyan-dark dark:hover:text-cyan-dark transition-all whitespace-nowrap shadow-sm dark:shadow-none flex items-center justify-center text-sm md:text-base">
                     Track My Case
                   </Link>
                 ) : (
                   <button
                     onClick={showAuthModal}
-                    className="bg-transparent border border-light-border-default dark:border-dark-border-default text-light-text-primary dark:text-dark-text-secondary px-8 py-3 rounded-lg font-medium hover:border-cyan hover:text-cyan dark:hover:border-cyan-dark dark:hover:text-cyan-dark transition-all whitespace-nowrap shadow-sm dark:shadow-none lg:text-base"
+                    className="bg-transparent border border-light-border-default dark:border-dark-border-default text-light-text-primary dark:text-dark-text-secondary px-8 py-4 rounded-xl font-medium hover:border-cyan hover:text-cyan dark:hover:border-cyan-dark dark:hover:text-cyan-dark transition-all whitespace-nowrap shadow-sm dark:shadow-none flex items-center justify-center text-sm md:text-base"
                   >
                     Track My Case
                   </button>
                 )}
               </div>
 
-              <div className="mt-6 flex flex-wrap items-center gap-2 text-light-text-secondary dark:text-dark-text-secondary text-sm font-medium">
-                <span>27 Crime Categories</span>
-                <span>·</span>
-                <span>BNS 2024 Legal</span>
-                <span>·</span>
-                <span>Instant FIR Email</span>
+              <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-6 text-light-text-secondary dark:text-dark-text-secondary text-[11px] sm:text-sm font-semibold uppercase tracking-wider">
+                <span>27 Categories</span>
+                <span className="opacity-30">•</span>
+                <span>BNS Legal</span>
+                <span className="opacity-30">•</span>
+                <span>Instant FIR</span>
               </div>
             </div>
 
@@ -191,7 +191,7 @@ export const Landing = () => {
         <section className="w-full bg-[#050812] border-y border-white/5 py-24 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.05),transparent_70%)]" />
           <div className="max-w-[1280px] w-full px-8 mx-auto relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
               {[
                 { label: "Multilingual Support", value: "3+ Langs", color: "cyan", detail: "Hindi, Hinglish & English" },
                 { label: "Service Status", value: "Always On", color: "emerald", detail: "24/7 AI-Powered Support" },
@@ -203,10 +203,10 @@ export const Landing = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-[#0D1526]/40 backdrop-blur-xl border border-white/5 p-8 rounded-[2rem] group hover:border-white/10 transition-all text-center lg:text-left"
+                  className="bg-[#0D1526]/40 backdrop-blur-xl border border-white/5 p-6 sm:p-8 rounded-[2rem] group hover:border-white/10 transition-all text-center lg:text-left relative overflow-hidden"
                 >
                   <div className={`text-${stat.color}-500 text-[10px] font-black uppercase tracking-[0.2em] mb-4`}>{stat.label}</div>
-                  <div className="text-4xl font-black text-white tracking-tighter mb-2 group-hover:scale-105 transition-transform origin-left">{stat.value}</div>
+                  <div className="text-3xl sm:text-4xl font-black text-white tracking-tighter mb-2 group-hover:scale-105 transition-transform origin-left">{stat.value}</div>
                   <div className="text-[10px] text-[#475569] font-mono tracking-tighter">{stat.detail}</div>
                   <div className="absolute top-4 right-6 w-12 h-12 bg-white/5 rounded-full blur-2xl group-hover:bg-cyan/10 transition-all" />
                 </motion.div>
@@ -220,10 +220,10 @@ export const Landing = () => {
         {/* SECTION 3 — SIMPLIFIED PIPELINE */}
         <section className="w-full py-40 bg-transparent relative flex flex-col items-center">
           <div className="max-w-[1280px] w-full px-8">
-            <div className="flex flex-col items-center text-center mb-24">
+            <div className="flex flex-col items-center text-center mb-24 px-4">
               <span className="text-cyan text-[10px] font-black tracking-[0.4em] uppercase mb-4">How It Works</span>
-              <h2 className="text-5xl font-black tracking-tight text-white m-0 p-0">From Complaint to FIR in Seconds</h2>
-              <p className="text-[#64748B] text-lg mt-4 max-w-2xl font-medium">Simple steps to file your cybercrime report and get professional legal documentation instantly.</p>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white m-0 p-0">From Complaint to FIR in Seconds</h2>
+              <p className="text-[#64748B] text-base md:text-lg mt-4 max-w-2xl font-medium">Simple steps to file your cybercrime report and get professional legal documentation instantly.</p>
             </div>
 
             <div className="relative w-full overflow-hidden lg:overflow-visible">
@@ -278,7 +278,7 @@ export const Landing = () => {
               <span className="text-red-500 text-[10px] font-black tracking-[0.4em] uppercase mb-2">Emergency Hub</span>
               <div className="text-stone-300 text-sm font-medium">Verified National Helplines Only:</div>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 w-full">
               {[
                 { label: "1930", title: "Cyber Crime", glow: "shadow-[0_0_20px_rgba(239,68,68,0.2)]" },
                 { label: "112", title: "Emergency", glow: "" },
@@ -288,10 +288,10 @@ export const Landing = () => {
                 <a
                   key={i}
                   href={`tel:${h.label}`}
-                  className={`group bg-[#1A0505] border border-red-500/20 px-6 py-4 rounded-2xl flex flex-col items-center hover:border-red-500/50 transition-all ${h.glow}`}
+                  className={`group bg-[#1A0505] border border-red-500/20 px-4 sm:px-6 py-4 rounded-2xl flex flex-col items-center hover:border-red-500/50 transition-all ${h.glow}`}
                 >
-                  <span className="text-red-500 text-2xl font-black tracking-tighter group-hover:scale-110 transition-transform">{h.label}</span>
-                  <span className="text-[9px] text-stone-500 font-bold uppercase tracking-widest mt-1">{h.title}</span>
+                  <span className="text-red-500 text-xl sm:text-2xl font-black tracking-tighter group-hover:scale-110 transition-transform">{h.label}</span>
+                  <span className="text-[8px] sm:text-[9px] text-stone-500 font-bold uppercase tracking-widest mt-1">{h.title}</span>
                 </a>
               ))}
             </div>
@@ -301,7 +301,7 @@ export const Landing = () => {
 
       {/* SECTION 5 — FOOTER */}
       <footer className="w-full bg-light-bg-surface dark:bg-dark-bg-surface border-t border-light-border-default dark:border-dark-border-default py-12 px-8 flex flex-col items-center mt-auto shadow-sm dark:shadow-none">
-        <div className="max-w-[1280px] w-full flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="max-w-[1280px] w-full flex flex-col md:flex-row items-center md:items-start justify-between gap-12">
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
             <div className="flex items-center gap-3 group mb-4">
               <div className="w-8 h-8 relative">
@@ -317,8 +317,8 @@ export const Landing = () => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center md:items-end gap-6 text-center md:text-right">
-            <div className="flex flex-wrap items-center gap-6">
+          <div className="flex flex-col items-center md:items-end gap-8 text-center md:text-right">
+            <div className="flex flex-wrap justify-center md:justify-end items-center gap-6">
               <Link to="/" className="text-light-text-secondary hover:text-light-text-primary dark:text-dark-text-secondary dark:hover:text-cyan-dark text-sm transition font-medium">Home</Link>
               <Link to="/how-it-works" className="text-light-text-secondary hover:text-light-text-primary dark:text-dark-text-secondary dark:hover:text-cyan-dark text-sm transition font-medium">Pipeline</Link>
               <Link to="/admin/login" className="text-light-text-secondary hover:text-light-text-primary dark:text-dark-text-secondary dark:hover:text-cyan-dark text-sm transition font-medium">SOC Admin</Link>

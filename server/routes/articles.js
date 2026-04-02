@@ -136,7 +136,8 @@ router.post('/generate', verifyAuth, async (req, res) => {
     }
 
     // DIRECT AXIOS HANDSHAKE (Immune to SDK versioning/authorization tier mismatches)
-    const modelSequence = ["gemini-2.0-flash", "gemini-1.5-flash-latest", "gemini-2.0-flash-exp"];
+    // Expanded list including 8B models for higher reliability/quota availability
+    const modelSequence = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-2.0-flash", "gemini-1.5-flash-latest"];
     let content = "";
 
 
@@ -172,10 +173,34 @@ router.post('/generate', verifyAuth, async (req, res) => {
         const statusCode = err.response?.status;
         console.warn(`🚨 Node ${modelName} direct handshake failed (${statusCode}): ${err.message}. Sequencing to next...`);
         
-        // If it's a 429, we handle it as a quota limit immediately
-        if (statusCode === 429) {
-          return res.status(429).json({ error: 'AI Quota exhausted. Please wait 60 seconds and retry.' });
+        // If it's a 429, we handle it as a quota limit immediately if it's the last flash model
+        if (statusCode === 429 && modelName === modelSequence[modelSequence.length-1]) {
+           console.warn("⚠️ All Gemini Flash nodes exhausted (429). Initiating HuggingFace Fallback...");
+           break; 
         }
+      }
+    }
+
+    // ── HUGGINGFACE FALLBACK (If Gemini is totally exhausted) ──────
+    if (!content && process.env.HF_API_TOKEN) {
+      try {
+        console.log("📡 Initiating HuggingFace Fallback (Zephyr-7B)...");
+        const hfUrl = `https://api-inference.huggingface.co/models/${process.env.HF_MODEL_ID || 'HuggingFaceH4/zephyr-7b-beta'}`;
+        const hfRes = await axios.post(hfUrl, 
+          { 
+            inputs: `<|system|>\nYou are a professional Indian cybercrime expert. Write a detailed educational article about ${topic}.\n<|user|>\nGenerate a comprehensive guide including BNS 2024 legal sections and prevention tips.\n<|assistant|>\n`,
+            parameters: { max_new_tokens: 1024, temperature: 0.7, return_full_text: false } 
+          },
+          { headers: { Authorization: `Bearer ${process.env.HF_API_TOKEN}` }, timeout: 45000 }
+        );
+        
+        const hfText = Array.isArray(hfRes.data) ? hfRes.data[0]?.generated_text : hfRes.data?.generated_text;
+        if (hfText) {
+          content = hfText;
+          console.log("✅ Intelligence materialized via HuggingFace fallback.");
+        }
+      } catch (hfErr) {
+        console.error("🚨 HuggingFace Fallback failed:", hfErr.message);
       }
     }
 

@@ -189,11 +189,11 @@ export const KnowledgeHub = () => {
   const userExperiences = filteredArticles.filter(art => art.tags?.includes('citizen-insight'));
 
   return (
-    <div className="w-full min-h-screen bg-[#0A0F1E] font-sans pt-12 pb-24 relative selection:bg-[#00D4FF] selection:text-[#0A0F1E]">
+    <div className="w-full min-h-screen bg-[#0A0F1E] font-sans pt-12 pb-24 relative selection:bg-[#00D4FF] selection:text-[#0A0F1E] overflow-x-hidden">
       
       {/* Background Ambience */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#00D4FF]/5 blur-[150px] rounded-full pointer-events-none opacity-50" />
-      <div className="absolute bottom-[-100px] left-0 w-[600px] h-[600px] bg-violet-600/5 blur-[180px] rounded-full pointer-events-none opacity-50" />
+      <div className="absolute top-0 right-0 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-[#00D4FF]/5 blur-[100px] sm:blur-[150px] rounded-full pointer-events-none opacity-50" />
+      <div className="absolute bottom-[-100px] left-0 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-violet-600/5 blur-[120px] sm:blur-[180px] rounded-full pointer-events-none opacity-50" />
 
       {/* PAGE BODY */}
       <div className="px-4 sm:px-8 md:px-12 relative z-10">

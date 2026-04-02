@@ -73,7 +73,7 @@ export const FirResult = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-8 flex flex-col items-center text-center mb-8 shadow-[0_0_40px_rgba(16,185,129,0.15)] relative overflow-hidden"
+          className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center mb-8 shadow-[0_0_40px_rgba(16,185,129,0.15)] relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-500/20 via-transparent to-transparent"></div>
 
@@ -82,8 +82,8 @@ export const FirResult = () => {
             <div className="absolute inset-0 border-2 border-emerald-400 rounded-full animate-ping opacity-20"></div>
           </div>
 
-          <h1 className="text-3xl font-extrabold text-white mb-2 relative z-10">FIR Successfully Logged</h1>
-          <p className="text-emerald-400/80 font-medium relative z-10">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-2 relative z-10">FIR Successfully Logged</h1>
+          <p className="text-sm sm:text-base text-emerald-400/80 font-medium relative z-10">
             Zephyr 7B AI has processed and securely mapped your statement.
           </p>
         </motion.div>
@@ -176,20 +176,20 @@ export const FirResult = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          className="flex flex-wrap items-center justify-between gap-4 mb-6"
+          className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8"
         >
-          <div className="flex items-center gap-2">
-            <span className="text-[#94A3B8] text-sm font-semibold uppercase tracking-wider">Reference No:</span>
-            <span className="bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#00D4FF] font-mono font-bold px-3 py-1 rounded text-lg select-all">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <span className="text-[#94A3B8] text-xs font-bold uppercase tracking-widest">Reference No:</span>
+            <span className="bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#00D4FF] font-mono font-bold px-4 py-2 rounded-xl text-xl select-all tracking-tighter">
               {complaintData.ref_no}
             </span>
           </div>
 
-          <div className="flex gap-3">
-            <button onClick={handlePrint} className="bg-[#0D1526] hover:bg-[#0F172A] border border-white/[0.1] text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 transition text-sm">
-              <Printer size={16} /> Print FIR
+          <div className="flex gap-3 w-full sm:w-auto">
+            <button onClick={handlePrint} className="flex-1 sm:flex-none justify-center bg-[#0D1526] hover:bg-[#0F172A] border border-white/[0.1] text-white px-5 py-3 rounded-xl font-semibold flex items-center gap-2 transition text-sm">
+              <Printer size={16} /> Print
             </button>
-            <Link to={`/track/${complaintData.ref_no}`} className="bg-[#00D4FF] hover:bg-[#00BBDD] text-[#0A0F1E] px-4 py-2 rounded-lg font-bold flex items-center gap-2 transition text-sm shadow-[0_0_15px_rgba(0,212,255,0.3)]">
+            <Link to={`/track/${complaintData.ref_no}`} className="flex-1 sm:flex-none justify-center bg-[#00D4FF] hover:bg-[#00BBDD] text-[#0A0F1E] px-5 py-3 rounded-xl font-bold flex items-center gap-2 transition text-sm shadow-[0_0_15px_rgba(0,212,255,0.3)]">
               Track Case <ExternalLink size={16} />
             </Link>
           </div>
@@ -218,26 +218,26 @@ export const FirResult = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white text-black p-8 md:p-12 rounded-xl shadow-2xl printable-document relative"
+          className="bg-white text-black p-5 sm:p-8 md:p-12 rounded-xl shadow-2xl printable-document relative overflow-hidden"
         >
           <div className="hidden print:block absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center -rotate-45">
             <span className="text-8xl font-black text-black">CYBERSHIELD SECURE</span>
           </div>
 
           {/* Document Header */}
-          <div className="flex justify-between items-start border-b-2 border-black pb-6 mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-6 border-b-2 border-black pb-6 mb-8">
             <div className="flex items-center gap-3">
-              <ShieldCheck size={48} className="text-black" />
+              <ShieldCheck size={40} className="text-black shrink-0 sm:size-[48px]" />
               <div>
-                <h2 className="text-2xl font-black uppercase tracking-tight">CyberShield Portal</h2>
-                <p className="text-sm font-semibold text-gray-600 uppercase tracking-widest">First Information Report</p>
+                <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight">CyberShield Portal</h2>
+                <p className="text-[10px] sm:text-xs font-semibold text-gray-600 uppercase tracking-widest">First Information Report</p>
               </div>
             </div>
-            <div className="text-right">
+            <div className="text-left sm:text-right w-full sm:w-auto">
               <div className="text-sm font-bold bg-black text-white px-2 py-1 inline-block mb-1">{complaintData.ref_no}</div>
-              <div className="text-xs text-gray-500 font-mono">Dt: {new Date(complaintData.createdAt).toLocaleDateString('en-GB')} {new Date(complaintData.createdAt).toLocaleTimeString()}</div>
+              <div className="text-[10px] sm:text-xs text-gray-500 font-mono">Dt: {new Date(complaintData.createdAt).toLocaleDateString('en-GB')} {new Date(complaintData.createdAt).toLocaleTimeString()}</div>
               {/* Fake Barcode styling */}
-              <div className="mt-2 font-mono text-[8px] tracking-[0.2em] leading-none mb-1 opacity-50">||||| | || ||| | ||| | || | ||||</div>
+              <div className="mt-2 font-mono text-[8px] tracking-[0.2em] leading-none mb-1 opacity-50 truncate">||||| | || ||| | ||| | || | ||||</div>
             </div>
           </div>
 
