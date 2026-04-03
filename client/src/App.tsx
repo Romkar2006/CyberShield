@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './components/layout/ThemeProvider';
 import { Layout } from './components/layout/Layout';
 import { AdminLayout } from './components/layout/AdminLayout';
@@ -7,6 +7,15 @@ import { PageLoader } from './components/shared/PageLoader';
 import { ErrorBoundary } from './components/shared/ErrorBoundary';
 import { AuthProvider } from './components/layout/AuthContext';
 import { AuthRequiredModal } from './components/shared/AuthRequiredModal';
+import { isUserLoggedIn } from './lib/auth';
+
+const CitizenProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  if (!isUserLoggedIn()) {
+    return <Navigate to={`/login?from=${encodeURIComponent(location.pathname)}`} replace />;
+  }
+  return <>{children}</>;
+};
 
 // Public & Citizen Pages
 const Landing = lazy(() => import('./pages/Landing').then(m => ({ default: m.Landing })));
@@ -64,13 +73,13 @@ function App() {
               <Route path="/status" element={<PublicStatus />} />
 
               
-              <Route path="/complaint" element={<FileComplaint />} />
-              <Route path="/result" element={<FirResult />} />
+              <Route path="/complaint" element={<CitizenProtectedRoute><FileComplaint /></CitizenProtectedRoute>} />
+              <Route path="/result" element={<CitizenProtectedRoute><FirResult /></CitizenProtectedRoute>} />
               <Route path="/track/:ref_no" element={<CaseTracker />} />
-              <Route path="/my-complaints" element={<MyComplaints />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/dashboard" element={<UserDashboard />} />
+              <Route path="/my-complaints" element={<CitizenProtectedRoute><MyComplaints /></CitizenProtectedRoute>} />
+              <Route path="/notifications" element={<CitizenProtectedRoute><Notifications /></CitizenProtectedRoute>} />
+              <Route path="/profile" element={<CitizenProtectedRoute><UserProfile /></CitizenProtectedRoute>} />
+              <Route path="/dashboard" element={<CitizenProtectedRoute><UserDashboard /></CitizenProtectedRoute>} />
             </Route>
 
             {/* Admin Routes */}

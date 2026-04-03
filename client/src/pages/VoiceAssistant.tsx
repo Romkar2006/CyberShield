@@ -5,6 +5,8 @@ import {
   Cpu, Activity, Zap, X, ChevronRight, Activity as WaveformIcon,
   Headphones, Lock, Radar
 } from 'lucide-react';
+import { isUserLoggedIn } from '../lib/auth';
+import { useAuthModal } from '../components/layout/AuthContext';
 
 import { chatWithBot } from '../lib/api';
 
@@ -17,6 +19,7 @@ const BNS_GLITCH_TEXT = [
 ];
 
 export const VoiceAssistant = () => {
+  const { showAuthModal } = useAuthModal();
   const [isCalling, setIsCalling] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [displayText, setDisplayText] = useState('Initiate Voice Command to Connect with CyberShield Intelligence');
@@ -139,6 +142,11 @@ export const VoiceAssistant = () => {
   };
 
   const startCall = () => {
+    if (!isUserLoggedIn()) {
+      showAuthModal();
+      return;
+    }
+    
     setIsCalling(true);
     setDisplayText('CyberShield Intelligence Linked. Authenticating...');
     setTimeout(() => {
@@ -160,7 +168,7 @@ export const VoiceAssistant = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] bg-[#050812] relative overflow-hidden flex flex-col items-center justify-center p-6 font-['Inter',sans-serif]">
+    <div className="min-h-[calc(100vh-140px)] bg-[#050812] relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-6 font-['Inter',sans-serif]">
       {/* ── Background Effects ── */}
       <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.15)_0,transparent_70%)]"></div>
@@ -168,7 +176,7 @@ export const VoiceAssistant = () => {
       </div>
 
       {/* ── Main Dashboard ── */}
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center relative z-10 py-6 sm:py-10">
         
         {/* Left Aspect: Visualization */}
         <div className="flex flex-col items-center gap-8">
@@ -201,11 +209,11 @@ export const VoiceAssistant = () => {
                 boxShadow: isListening ? "0 0 80px rgba(34,211,238,0.3)" : "0 0 30px rgba(34,211,238,0.1)"
               } : {}}
               transition={isListening ? { duration: 1, repeat: Infinity } : { duration: 60, repeat: Infinity, ease: "linear" }}
-              className={`w-64 h-64 rounded-[3rem] border-2 flex items-center justify-center relative bg-black/40 backdrop-blur-xl transition-all duration-500 ${
+              className={`w-52 h-52 sm:w-64 sm:h-64 rounded-[2.5rem] sm:rounded-[3rem] border-2 flex items-center justify-center relative bg-black/40 backdrop-blur-xl transition-all duration-500 ${
                 isCalling ? 'border-cyan/40' : 'border-white/5'
               }`}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan/20 via-transparent to-violet-500/20 rounded-[3rem]"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan/20 via-transparent to-violet-500/20 rounded-[2.5rem] sm:rounded-[3rem]"></div>
               
               <AnimatePresence mode="wait">
                 {!isCalling ? (
@@ -214,10 +222,10 @@ export const VoiceAssistant = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col items-center text-gray-500"
+                    className="flex flex-col items-center text-gray-500 p-4"
                   >
-                    <Radar size={80} className="mb-4 opacity-20" />
-                    <span className="text-[10px] font-black tracking-[0.3em] uppercase">Ready for Deployment</span>
+                    <Radar size={60} className="sm:size-20 mb-4 opacity-20" />
+                    <span className="text-[8px] sm:text-[10px] font-black tracking-[0.3em] uppercase text-center">Ready for Deployment</span>
                   </motion.div>
                 ) : (
                   <motion.div 
@@ -278,20 +286,20 @@ export const VoiceAssistant = () => {
         </div>
 
         {/* Right Aspect: Controls & Output */}
-        <div className="bg-white/5 border border-white/5 rounded-[3rem] p-10 flex flex-col h-[500px] shadow-2xl relative overflow-hidden">
+        <div className="bg-white/5 border border-white/5 rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-10 flex flex-col min-h-[450px] lg:h-[500px] shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-[0.03]">
              <Lock size={120} />
           </div>
 
           <div className="flex-1 flex flex-col gap-6 relative z-10">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">Secure Audio Stream</span>
+                <span className="text-[10px] font-black text-white uppercase tracking-widest leading-none">Secure Audio Stream</span>
               </div>
               <button 
                 onClick={() => setIsMuted(!isMuted)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-widest transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[9px] font-black uppercase tracking-widest transition-all w-fit ${
                   isMuted ? 'border-red-500/30 text-red-500 bg-red-500/10' : 'border-white/10 text-gray-400 hover:text-white'
                 }`}
               >
@@ -308,7 +316,7 @@ export const VoiceAssistant = () => {
                 key={displayText}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-2xl font-bold text-white tracking-tight leading-snug line-clamp-6"
+                className="text-lg sm:text-2xl font-bold text-white tracking-tight leading-snug line-clamp-6"
               >
                 {displayText}
               </motion.p>
@@ -360,17 +368,17 @@ export const VoiceAssistant = () => {
       </div>
 
       {/* Footer Info */}
-      <div className="mt-16 flex items-center gap-8 opacity-30">
+      <div className="mt-8 sm:mt-16 flex flex-wrap items-center justify-center gap-4 sm:gap-8 opacity-30 text-center">
         <div className="flex items-center gap-2">
           <Headphones size={14} className="text-white" />
           <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Crystal Voice Engine</span>
         </div>
-        <div className="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+        <div className="hidden sm:block w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
         <div className="flex items-center gap-2">
           <Shield size={14} className="text-white" />
           <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Encrypted Handshake</span>
         </div>
-        <div className="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+        <div className="hidden sm:block w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
         <div className="flex items-center gap-2">
           <Activity size={14} className="text-white" />
           <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Latency: <span className="text-cyan">0.24ms</span></span>

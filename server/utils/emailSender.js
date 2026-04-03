@@ -35,10 +35,10 @@ console.log(`[EmailSender] Initialized with sender: ${SENDER_ADDRESS}`);
 // ── Severity colour helpers ───────────────────────────────────
 function severityColor(severity) {
   const map = {
-    Critical: { bg: '#991B1B', text: '#FEE2E2', badge: '#EF4444' },
-    High:     { bg: '#92400E', text: '#FEF3C7', badge: '#F59E0B' },
-    Medium:   { bg: '#78350F', text: '#FEF9C3', badge: '#EAB308' },
-    Low:      { bg: '#14532D', text: '#DCFCE7', badge: '#22C55E' }
+    Critical: { bg: '#FEF2F2', text: '#991B1B', border: '#F87171' },
+    High: { bg: '#FFFBEB', text: '#92400E', border: '#FBBF24' },
+    Medium: { bg: '#EFF6FF', text: '#1E40AF', border: '#60A5FA' },
+    Low: { bg: '#F0FDF4', text: '#166534', border: '#4ADE80' }
   };
   return map[severity] || map.Medium;
 }
@@ -46,47 +46,30 @@ function severityColor(severity) {
 // ── Shared GOI-style header HTML ─────────────────────────────
 function govtHeader(title, subtitle) {
   return `
-  <!-- GOI LETTERHEAD -->
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F172A; border-bottom:3px solid #FF6B00;">
+  <!-- MINIMAL INSTITUTIONAL HEADER -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#FFFFFF; border-bottom:1px solid #E2E8F0;">
     <tr>
-      <td style="padding:0; text-align:center;">
-        <!-- TOP TRICOLOR STRIPE -->
+      <td style="padding:40px 40px 30px; text-align:left;">
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td style="height:5px; background:#FF6B00;"></td>
-          </tr>
-          <tr>
-            <td style="height:5px; background:#FFFFFF;"></td>
-          </tr>
-          <tr>
-            <td style="height:5px; background:#138808;"></td>
+            <td style="width:50px;">
+               <div style="width:40px; height:40px; background:#0F172A; border-radius:8px; text-align:center; line-height:40px; color:#00D4FF; font-weight:900; font-size:20px; font-family:Arial, sans-serif;">CS</div>
+            </td>
+            <td style="padding-left:15px;">
+              <div style="font-size:16px; font-weight:800; color:#0F172A; font-family:Arial, sans-serif; letter-spacing:-0.5px; text-transform:uppercase;">Cyber<span style="color:#00D4FF;">Shield</span> India</div>
+              <div style="font-size:10px; color:#64748B; font-family:Arial, sans-serif; font-weight:700; letter-spacing:1px; text-transform:uppercase;">National Cyber Intelligence Portal</div>
+            </td>
+            <td style="text-align:right; vertical-align:top;">
+               <div style="font-size:9px; color:#94A3B8; font-family:Arial, sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1.5px;">Official Cyber Registry</div>
+            </td>
           </tr>
         </table>
       </td>
     </tr>
     <tr>
-      <td style="padding:28px 40px 20px; text-align:center;">
-        <!-- EMBLEM LINE -->
-        <div style="font-size:11px; font-family:'Courier New',monospace; color:#64748B; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px;">
-          &#9670; GOVERNMENT OF INDIA &#9670; MINISTRY OF HOME AFFAIRS &#9670;
-        </div>
-        <!-- TITLE -->
-        <div style="font-size:22px; font-weight:900; color:#E2E8F0; font-family:Georgia,serif; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px;">
-          CyberShield India
-        </div>
-        <div style="font-size:11px; color:#94A3B8; font-family:Arial,sans-serif; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">
-          National Cyber Crime Intelligence Platform
-        </div>
-        <div style="font-size:10px; color:#475569; font-family:'Courier New',monospace; letter-spacing:1px;">
-          Established under IT Act 2000 | BNS 2024 Compliant
-        </div>
-      </td>
-    </tr>
-    <!-- HEADER TYPE BANNER -->
-    <tr>
-      <td style="background:#1E293B; padding:12px 40px; border-top:1px solid rgba(255,255,255,0.07); border-bottom:1px solid rgba(255,255,255,0.07); text-align:center;">
-        <span style="font-size:13px; font-weight:700; color:#00D4FF; font-family:'Courier New',monospace; letter-spacing:3px; text-transform:uppercase;">${title}</span>
-        ${subtitle ? `<div style="font-size:10px; color:#64748B; margin-top:3px; letter-spacing:1px; text-transform:uppercase;">${subtitle}</div>` : ''}
+      <td style="padding:0 40px 20px;">
+        <div style="font-size:20px; font-weight:800; color:#1E293B; font-family:Arial, sans-serif; letter-spacing:-0.5px;">${title}</div>
+        ${subtitle ? `<div style="font-size:12px; color:#64748B; margin-top:4px; font-family:Arial, sans-serif;">${subtitle}</div>` : ''}
       </td>
     </tr>
   </table>`;
@@ -95,23 +78,33 @@ function govtHeader(title, subtitle) {
 // ── Shared GOI-style footer HTML ─────────────────────────────
 function govtFooter(ref_no) {
   return `
-  <!-- FOOTER -->
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F172A; border-top:1px solid rgba(255,255,255,0.08);">
+  <!-- MINIMAL FOOTER -->
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC; border-top:1px solid #E2E8F0;">
     <tr>
-      <td style="padding:20px 40px;">
-        <!-- TRICOLOR BOTTOM -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
-          <tr>
-            <td style="height:2px; background:#FF6B00;"></td>
-            <td style="height:2px; background:#FFFFFF;"></td>
-            <td style="height:2px; background:#138808;"></td>
-          </tr>
-        </table>
-        <div style="font-size:10px; color:#475569; font-family:'Courier New',monospace; line-height:1.8; text-align:center;">
-          <strong style="color:#64748B;">CONFIDENTIALITY NOTICE:</strong> This communication is intended solely for the addressee and is protected under the Information Technology Act, 2000. Unauthorized disclosure, copying, or distribution is strictly prohibited and may result in prosecution under BNS 2024.<br><br>
-          REF: ${ref_no || 'N/A'} &nbsp;|&nbsp; AUTO-GENERATED BY CYBERSHIELD AI SYSTEM &nbsp;|&nbsp; DO NOT REPLY TO THIS EMAIL<br>
-          CyberShield India &mdash; National Cyber Crime Intelligence Platform &mdash; cybershield.gov.in<br>
-          Helpline: <strong style="color:#00D4FF;">1930</strong> (24x7) &nbsp;|&nbsp; Emergency: <strong style="color:#EF4444;">112</strong>
+      <td style="padding:40px;">
+        <div style="font-size:11px; color:#64748B; font-family:Arial,sans-serif; line-height:1.8; text-align:left;">
+          <strong style="color:#475569;">OFFICIAL EMERGENCY HELPLINES (24x7):</strong><br>
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:10px;">
+            <tr>
+              <td style="font-size:13px; font-weight:800; color:#00D4FF; width:25%;">1930 <span style="font-size:10px; color:#94A3B8; font-weight:400;">(Cyber Crime)</span></td>
+              <td style="font-size:13px; font-weight:800; color:#EF4444; width:25%;">112 <span style="font-size:10px; color:#94A3B8; font-weight:400;">(Emergency)</span></td>
+              <td style="font-size:13px; font-weight:800; color:#1E293B; width:25%;">181 <span style="font-size:10px; color:#94A3B8; font-weight:400;">(Women)</span></td>
+              <td style="font-size:13px; font-weight:800; color:#1E293B; width:25%;">1091 <span style="font-size:10px; color:#94A3B8; font-weight:400;">(Safety)</span></td>
+            </tr>
+          </table>
+          <br>
+          <strong style="color:#475569;">SECURITY NOTICE:</strong> This is an officially generated communication from the CyberShield National Portal. All data is encrypted and handled per IT Act 2000 protocols. If you did not initiate this request, please report it to our security cell immediately.<br><br>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="font-size:10px; color:#94A3B8; text-transform:uppercase; letter-spacing:1px;">Ref: ${ref_no || 'N/A'}</td>
+              <td style="text-align:right;">
+                <span style="font-size:10px; font-weight:700; color:#00D4FF;">Official Communication</span>
+              </td>
+            </tr>
+          </table>
+          <div style="margin-top:20px; padding-top:20px; border-top:1px solid #E2E8F0; text-align:center; color:#94A3B8; font-size:10px;">
+            CyberShield India &bull; National Cyber Crime Bureau &bull; New Delhi, India<br>
+          </div>
         </div>
       </td>
     </tr>
@@ -126,145 +119,81 @@ export async function sendWelcomeEmail(to, data) {
   const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Complaint Registered — ${ref_no}</title>
+<title>Acknowledgment — ${ref_no}</title>
 </head>
-<body style="margin:0; padding:0; background:#0A0F1E; font-family:Arial,'Helvetica Neue',sans-serif;">
+<body style="margin:0; padding:0; background:#F1F5F9; font-family: 'Inter', -apple-system, Arial, sans-serif;">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#0A0F1E; padding:30px 20px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F1F5F9; padding:40px 20px;">
 <tr><td align="center">
-<table width="620" cellpadding="0" cellspacing="0" style="background:#0D1526; border-radius:4px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); box-shadow:0 0 60px rgba(0,0,0,0.6);">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#FFFFFF; border-radius:16px; overflow:hidden; box-shadow:0 4px 25px rgba(0,0,0,0.05); border:1px solid #E2E8F0;">
 
-  <!-- GOVERNMENT HEADER -->
+  <!-- MINIMAL HEADER -->
   <tr><td>
-    ${govtHeader('E-FIR Acknowledgment Notice', 'Complaint Successfully Registered with National Cyber Cell')}
+    ${govtHeader('E-FIR Acknowledgment', 'Case successfully initiated in National Registry')}
   </td></tr>
 
-  <!-- ACK NUMBER BANNER -->
+  <!-- BODY CONTENT -->
   <tr>
-    <td style="background:#1E293B; padding:20px 40px; border-bottom:1px solid rgba(255,255,255,0.06);">
-      <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>
-            <div style="font-size:10px; color:#64748B; font-family:'Courier New',monospace; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">Acknowledgment Reference Number</div>
-            <div style="font-size:28px; font-weight:900; color:#00D4FF; font-family:'Courier New',monospace; letter-spacing:6px;">${ref_no}</div>
-          </td>
-          <td align="right" valign="middle">
-            <div style="display:inline-block; background:${sev.bg}; color:${sev.badge}; border:1px solid ${sev.badge}40; padding:6px 16px; border-radius:4px; font-size:11px; font-weight:700; font-family:'Courier New',monospace; letter-spacing:2px; text-transform:uppercase;">
-              &#9632; ${severity} PRIORITY
-            </div>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+    <td style="padding:40px;">
+      <div style="font-size:14px; color:#64748B; margin-bottom:8px;">Hello,</div>
+      <div style="font-size:18px; font-weight:800; color:#0F172A; margin-bottom:24px;">${name}</div>
 
-  <!-- BODY -->
-  <tr>
-    <td style="padding:32px 40px;">
-
-      <!-- SALUTATION -->
-      <p style="font-size:14px; color:#94A3B8; margin:0 0 8px;">To,</p>
-      <p style="font-size:16px; font-weight:700; color:#E2E8F0; margin:0 0 24px; text-transform:uppercase; letter-spacing:0.5px;">${name}</p>
-
-      <!-- FORMAL PARA -->
-      <p style="font-size:13px; color:#94A3B8; line-height:1.9; margin:0 0 20px; text-align:justify;">
-        This is to certify that your cybercrime complaint has been officially registered with the <strong style="color:#E2E8F0;">CyberShield National Cyber Intelligence Platform</strong> operated under the Ministry of Home Affairs, Government of India. Your complaint has been processed by our Zephyr 7B AI Classification Engine and assigned to the competent authority for investigation.
-      </p>
-
-      <!-- CASE DETAILS TABLE -->
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px; border:1px solid rgba(255,255,255,0.07); border-radius:4px; overflow:hidden;">
-        <tr style="background:#1E293B;">
-          <td colspan="2" style="padding:10px 16px; font-size:10px; font-family:'Courier New',monospace; color:#64748B; letter-spacing:2px; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.06);">
-            &#9632; Case Details
-          </td>
-        </tr>
-        <tr style="background:#0F172A;">
-          <td style="padding:10px 16px; font-size:12px; color:#64748B; font-family:'Courier New',monospace; width:40%; border-bottom:1px solid rgba(255,255,255,0.04);">Reference No.</td>
-          <td style="padding:10px 16px; font-size:12px; color:#00D4FF; font-family:'Courier New',monospace; font-weight:700; border-bottom:1px solid rgba(255,255,255,0.04);">${ref_no}</td>
-        </tr>
-        <tr style="background:#0D1526;">
-          <td style="padding:10px 16px; font-size:12px; color:#64748B; font-family:'Courier New',monospace; border-bottom:1px solid rgba(255,255,255,0.04);">Crime Category</td>
-          <td style="padding:10px 16px; font-size:12px; color:#E2E8F0; font-family:Arial,sans-serif; font-weight:600; border-bottom:1px solid rgba(255,255,255,0.04);">${categories.join(' / ')}</td>
-        </tr>
-        <tr style="background:#0F172A;">
-          <td style="padding:10px 16px; font-size:12px; color:#64748B; font-family:'Courier New',monospace; border-bottom:1px solid rgba(255,255,255,0.04);">Severity Level</td>
-          <td style="padding:10px 16px; border-bottom:1px solid rgba(255,255,255,0.04);">
-            <span style="background:${sev.bg}; color:${sev.badge}; padding:3px 10px; border-radius:3px; font-size:11px; font-weight:700; font-family:'Courier New',monospace; letter-spacing:1px;">${severity}</span>
-          </td>
-        </tr>
-        <tr style="background:#0D1526;">
-          <td style="padding:10px 16px; font-size:12px; color:#64748B; font-family:'Courier New',monospace;">Date & Time Filed</td>
-          <td style="padding:10px 16px; font-size:12px; color:#E2E8F0; font-family:'Courier New',monospace;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true })} IST</td>
-        </tr>
-      </table>
-
-      <!-- INSTRUCTIONS HEADER -->
-      <div style="background:#1E293B; border-left:3px solid #00D4FF; padding:12px 16px; margin-bottom:16px; border-radius:0 4px 4px 0;">
-        <div style="font-size:10px; color:#00D4FF; font-family:'Courier New',monospace; letter-spacing:2px; text-transform:uppercase; font-weight:700;">&#9632; Mandatory Instructions for Complainant</div>
+      <!-- ACKNOWLEDGMENT PARAGRAPH -->
+      <div style="padding:20px; background:#F0FDFA; border:1px solid #5EEAD4; border-left:4px solid #0D9488; border-radius:12px; margin-bottom:30px;">
+        <div style="font-size:13px; font-weight:800; color:#0D9488; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Official Acknowledgment</div>
+        <p style="font-size:14px; color:#134E4A; line-height:1.6; margin:0;">
+          We have successfully received your cybercrime complaint at the National Registry. This email serves as an official certification that your report is now in our system and has been assigned for immediate triage. We appreciate your vigilance in reporting this incident.
+        </p>
       </div>
 
-      <!-- NUMBERED INSTRUCTIONS -->
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+      <p style="font-size:15px; color:#475569; line-height:1.6; margin-bottom:30px;">
+        Your submission is being processed by the <strong style="color:#0F172A;">National Cyber Intelligence Cell</strong>. Below are the critical details and tracking IDs for your case.
+      </p>
+
+      <div style="background:#0F172A; border-radius:12px; padding:30px; margin-bottom:30px; text-align:center; box-shadow:0 10px 30px rgba(15,23,42,0.2);">
+        <div style="font-size:11px; font-weight:800; color:#00D4FF; text-transform:uppercase; letter-spacing:3px; margin-bottom:10px;">Acknowledgment Reference Number</div>
+        <div style="font-size:32px; font-weight:900; color:#FFFFFF; font-family:monospace; margin-bottom:20px; letter-spacing:4px;">${ref_no}</div>
+        <div style="display:inline-block; background:${sev.bg}; color:${sev.text}; border:1px solid ${sev.border}; padding:8px 24px; border-radius:50px; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:1px;">${severity} SEVERITY LEVEL</div>
+      </div>
+
+      <!-- IMMEDIATE SAFETY PRECAUTIONS -->
+      <div style="margin-bottom:30px; padding:24px; border:1.5px solid #EF4444; border-radius:16px; background:#FEF2F2;">
+        <div style="font-size:14px; font-weight:900; color:#991B1B; text-transform:uppercase; letter-spacing:2px; margin-bottom:16px;">&#9888; IMMEDIATE SAFETY CHECKLIST</div>
+        <ul style="padding:0; margin:0; list-style:none;">
+          <li style="margin-bottom:12px; font-size:13px; color:#7F1D1D; line-height:1.6;">&bull; **Contact your Bank:** Immediately call 1930 if financial loss occurred.</li>
+          <li style="margin-bottom:12px; font-size:13px; color:#7F1D1D; line-height:1.6;">&bull; **Freeze Exposure:** Block compromised accounts, cards, and change all passwords.</li>
+          <li style="margin-bottom:12px; font-size:13px; color:#7F1D1D; line-height:1.6;">&bull; **Zero Interaction:** Do not engage further with the suspicious entities.</li>
+          <li style="margin-bottom:0; font-size:13px; color:#7F1D1D; line-height:1.6;">&bull; **Digital Audit:** Log out of all devices and check for unauthorized logins.</li>
+        </ul>
+      </div>
+
+      <div style="font-size:14px; font-weight:800; color:#0F172A; text-transform:uppercase; letter-spacing:1px; margin-bottom:20px;">Immediate Instructions</div>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:30px;">
         ${[
-          ['Preserve Reference Number', `Quote <strong style="color:#00D4FF; font-family:'Courier New',monospace;">${ref_no}</strong> in all future communications with law enforcement.`],
-          ['Do NOT Destroy Evidence', 'Preserve all screenshots, transaction receipts, call recordings, chat logs, and emails pertaining to this incident.'],
-          ['Track Your Case Online', `Visit <a href="https://cybershield.vercel.app/track/${ref_no}" style="color:#00D4FF;">cybershield.vercel.app/track/${ref_no}</a> for real-time case status updates.`],
-          ['Initiate Financial Block', 'If financial fraud has occurred, immediately contact your bank to freeze the transaction or reverse the transfer (within 24 hours significantly improves recovery chances).'],
-        ].map(([title, desc], i) => `
+          ['Reference ID', `Use <strong>${ref_no}</strong> for all inquiries.`],
+          ['Evidence', 'Retain all screenshots, logs, and transaction receipts.'],
+          ['Tracking', `Track status at <a href="${process.env.CLIENT_URL}/track/${ref_no}" style="color:#00D4FF; text-decoration:none; font-weight:700;">Online Portal</a>.`],
+        ].map(([t, d], i) => `
         <tr>
-          <td valign="top" style="padding:0 0 14px 0;">
-            <table width="100%" cellpadding="0" cellspacing="0">
-              <tr>
-                <td valign="top" style="width:30px; padding-top:2px;">
-                  <div style="width:22px; height:22px; background:#1E293B; border:1px solid rgba(0,212,255,0.3); border-radius:3px; text-align:center; line-height:22px; font-size:11px; font-weight:700; color:#00D4FF; font-family:'Courier New',monospace;">${i+1}</div>
-                </td>
-                <td style="padding-left:10px;">
-                  <div style="font-size:12px; font-weight:700; color:#E2E8F0; margin-bottom:3px;">${title}</div>
-                  <div style="font-size:12px; color:#94A3B8; line-height:1.7;">${desc}</div>
-                </td>
-              </tr>
-            </table>
+          <td style="padding-bottom:15px; vertical-align:top; width:25px;">
+             <div style="width:18px; height:18px; background:#0F172A; color:#FFFFFF; font-size:10px; line-height:18px; text-align:center; border-radius:4px; font-weight:800;">${i+1}</div>
+          </td>
+          <td style="padding-bottom:15px; padding-left:10px;">
+             <div style="font-size:13px; font-weight:700; color:#1E293B; margin-bottom:2px;">${t}</div>
+             <div style="font-size:13px; color:#64748B; line-height:1.5;">${d}</div>
           </td>
         </tr>`).join('')}
       </table>
 
-      <!-- HELPLINES -->
-      <div style="background:#1E293B; border-left:3px solid #FF6B00; padding:12px 16px; margin-bottom:16px; border-radius:0 4px 4px 0;">
-        <div style="font-size:10px; color:#FF6B00; font-family:'Courier New',monospace; letter-spacing:2px; text-transform:uppercase; font-weight:700;">&#9632; 24x7 National Emergency Helplines</div>
+      <div style="text-align:center; margin-top:20px;">
+         <a href="${process.env.CLIENT_URL}/track/${ref_no}" style="display:inline-block; background:#0F172A; color:#FFFFFF; padding:16px 32px; border-radius:12px; font-weight:800; font-size:14px; text-decoration:none; text-transform:uppercase; letter-spacing:0.5px;">Track Case Progress</a>
       </div>
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-        <tr>
-          ${[['1930','Cyber Crime Cell'],['112','National Emergency'],['181','Women Helpline'],['1091','Women Safety']].map(([num, lbl]) => `
-          <td align="center" style="padding:4px;">
-            <div style="background:#0F172A; border:1px solid rgba(255,255,255,0.07); border-radius:4px; padding:12px 8px;">
-              <div style="font-size:22px; font-weight:900; color:#00D4FF; font-family:'Courier New',monospace;">${num}</div>
-              <div style="font-size:9px; color:#64748B; text-transform:uppercase; letter-spacing:1px; margin-top:4px;">${lbl}</div>
-            </div>
-          </td>`).join('')}
-        </tr>
-      </table>
 
-      <!-- OFFICIAL SIGN-OFF -->
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid rgba(255,255,255,0.07); padding-top:20px; margin-top:8px;">
-        <tr>
-          <td>
-            <div style="font-size:12px; color:#94A3B8;">Yours faithfully,</div>
-            <div style="font-size:14px; font-weight:700; color:#E2E8F0; margin-top:8px;">System Administrator</div>
-            <div style="font-size:11px; color:#64748B; font-family:'Courier New',monospace;">CyberShield AI Platform</div>
-            <div style="font-size:11px; color:#475569; font-family:'Courier New',monospace;">National Cyber Crime Intelligence Cell</div>
-            <div style="font-size:11px; color:#475569; font-family:'Courier New',monospace;">Ministry of Home Affairs, Government of India</div>
-          </td>
-          <td align="right" valign="bottom">
-            <div style="font-size:9px; color:#334155; font-family:'Courier New',monospace; text-align:right; line-height:1.8;">
-              DIGITALLY SIGNED<br>
-              CyberShield AI System<br>
-              ${new Date().toLocaleDateString('en-IN')}<br>
-              &#9632;&#9632;&#9632;&#9632;&#9632;&#9632;&#9632;&#9632;
-            </div>
-          </td>
-        </tr>
-      </table>
-
+      <div style="margin-top:40px; pt-30px; border-top:1px solid #E2E8F0; padding-top:30px;">
+         <div style="font-size:13px; color:#94A3B8;">Regards,</div>
+         <div style="font-size:14px; font-weight:700; color:#0F172A; margin-top:5px;">CyberShield System Core</div>
+         <div style="font-size:12px; color:#64748B;">National Cyber Intelligence Cell</div>
+      </div>
     </td>
   </tr>
 
@@ -293,7 +222,7 @@ export async function sendFirEmail(to, data) {
 
   const bnsRows = (bns_sections || []).map((s, i) => `
     <tr style="background:${i % 2 === 0 ? '#0F172A' : '#0D1526'};">
-      <td style="padding:8px 16px; font-size:11px; color:#64748B; font-family:'Courier New',monospace; width:20px; border-bottom:1px solid rgba(255,255,255,0.04);">${String(i+1).padStart(2,'0')}</td>
+      <td style="padding:8px 16px; font-size:11px; color:#64748B; font-family:'Courier New',monospace; width:20px; border-bottom:1px solid rgba(255,255,255,0.04);">${String(i + 1).padStart(2, '0')}</td>
       <td style="padding:8px 16px; font-size:12px; color:#A78BFA; font-family:'Courier New',monospace; border-bottom:1px solid rgba(255,255,255,0.04);">${s.split(':')[0].trim()}</td>
       <td style="padding:8px 16px; font-size:12px; color:#94A3B8; border-bottom:1px solid rgba(255,255,255,0.04);">${s.includes(':') ? s.split(':')[1].trim() : ''}</td>
     </tr>`).join('');
@@ -301,185 +230,112 @@ export async function sendFirEmail(to, data) {
   const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>First Information Report — ${ref_no}</title>
+<title>Official E-FIR — ${ref_no}</title>
 </head>
-<body style="margin:0; padding:0; background:#0A0F1E; font-family:Arial,'Helvetica Neue',sans-serif;">
+<body style="margin:0; padding:0; background:#F1F5F9; font-family: 'Inter', Arial, sans-serif;">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#0A0F1E; padding:30px 20px;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F1F5F9; padding:40px 20px;">
 <tr><td align="center">
-<table width="680" cellpadding="0" cellspacing="0" style="background:#0D1526; border-radius:4px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); box-shadow:0 0 60px rgba(0,0,0,0.6);">
+<table width="640" cellpadding="0" cellspacing="0" style="background:#FFFFFF; border-radius:16px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.1); border:1px solid #E2E8F0;">
 
-  <!-- GOVERNMENT HEADER -->
+  <!-- MINIMAL HEADER -->
   <tr><td>
-    ${govtHeader('FIRST INFORMATION REPORT (E-FIR)', 'AI-Classified Crime Intelligence Document — CONFIDENTIAL')}
+    ${govtHeader('Official E-FIR Report', 'National Cyber Crime Bureau — Intelligence Document')}
   </td></tr>
 
-  <!-- CLASSIFICATION BANNER -->
+  <!-- STATUS BANNER -->
   <tr>
-    <td style="background:#${severity === 'Critical' ? '7f1d1d' : severity === 'High' ? '78350f' : '1e293b'}; padding:10px 40px;">
+    <td style="background:#F8FAFC; padding:15px 40px; border-bottom:1px solid #E2E8F0;">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td>
-            <span style="font-size:10px; font-family:'Courier New',monospace; color:${sev.badge}; letter-spacing:3px; text-transform:uppercase; font-weight:700;">
-              &#9632; CLASSIFICATION: ${severity.toUpperCase()} PRIORITY &nbsp;|&nbsp; RESTRICTED ACCESS
+            <span style="font-size:10px; font-weight:800; color:#64748B; letter-spacing:1px; text-transform:uppercase;">
+              STATUS: ${severity.toUpperCase()} PRIORITY &nbsp;|&nbsp; IDENTITY VERIFIED
             </span>
           </td>
-          <td align="right">
-            <span style="font-size:10px; font-family:'Courier New',monospace; color:#475569; letter-spacing:1px;">
-              FIR NO: ${ref_no}
-            </span>
+          <td style="text-align:right;">
+            <span style="font-size:10px; font-weight:800; color:#00D4FF; letter-spacing:1.5px; font-family:monospace;">${ref_no}</span>
           </td>
         </tr>
       </table>
     </td>
   </tr>
 
-  <!-- REF + META -->
+  <!-- BODY CONTENT -->
   <tr>
-    <td style="background:#1E293B; padding:20px 40px; border-bottom:1px solid rgba(255,255,255,0.06);">
-      <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-          <td>
-            <div style="font-size:10px; color:#64748B; font-family:'Courier New',monospace; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px;">FIR Number</div>
-            <div style="font-size:30px; font-weight:900; color:#E2E8F0; font-family:'Courier New',monospace; letter-spacing:6px;">${ref_no}</div>
-          </td>
-          <td align="right" valign="top">
-            <table cellpadding="0" cellspacing="0">
-              <tr>
-                <td align="right">
-                  <div style="font-size:9px; color:#64748B; font-family:'Courier New',monospace; margin-bottom:4px; letter-spacing:1px; text-transform:uppercase;">Date of Registration</div>
-                  <div style="font-size:11px; color:#94A3B8; font-family:'Courier New',monospace;">${new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day:'2-digit', month:'long', year:'numeric' })}</div>
-                  <div style="margin-top:8px; font-size:9px; color:#334155; font-family:'Courier New',monospace; letter-spacing:2px;">|||||||||||||||||||||||</div>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+    <td style="padding:40px;">
 
-  <!-- BODY -->
-  <tr>
-    <td style="padding:32px 40px;">
-
-      <!-- SECTION 1: COMPLAINANT -->
-      <div style="background:#1E293B; border-left:3px solid #00D4FF; padding:10px 16px; margin-bottom:12px; border-radius:0 4px 4px 0;">
-        <div style="font-size:10px; color:#00D4FF; font-family:'Courier New',monospace; letter-spacing:2px; font-weight:700; text-transform:uppercase;">&#9632; Section I — Complainant Details</div>
+      <!-- ACKNOWLEDGMENT PARAGRAPH -->
+      <div style="padding:20px; background:#F8FAFC; border:1px solid #E2E8F0; border-left:4px solid #0F172A; border-radius:12px; margin-bottom:30px;">
+        <div style="font-size:12px; font-weight:800; color:#0F172A; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px;">Official Acknowledgment of Complaint</div>
+        <p style="font-size:14px; color:#475569; line-height:1.6; margin:0;">
+          This document serves as an institutional acknowledgment that your cybercrime report has been formally registered in the CyberShield National Database. Our system has completed its initial analysis, and your case (Ref: ${ref_no}) has been assigned for official review.
+        </p>
       </div>
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px; border:1px solid rgba(255,255,255,0.07); border-radius:4px; overflow:hidden;">
+
+      <!-- HIGH-IMPACT HIGHLIGHTS -->
+      <div style="background:#0F172A; border-radius:16px; padding:35px; margin-bottom:35px; text-align:center;">
+        <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">CASE REFERENCE ID</div>
+        <div style="font-size:36px; font-weight:900; color:#FFFFFF; font-family:monospace; letter-spacing:5px; margin-bottom:15px;">${ref_no}</div>
+        <div style="display:inline-block; background:${sev.bg}; color:${sev.text}; border:1px solid ${sev.border}; padding:6px 20px; border-radius:6px; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:1.5px;">IDENTIFIED SEVERITY: ${severity}</div>
+      </div>
+
+      <!-- IMMEDIATE SAFETY STEPS -->
+      <div style="background:#FFFBEB; border:1px solid #F6E05E; border-radius:12px; padding:24px; margin-bottom:35px;">
+        <div style="font-size:13px; font-weight:800; color:#92400E; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">&#9888; CRITICAL SAFETY PRECAUTIONS</div>
+        <div style="font-size:13px; color:#92400E; margin-bottom:8px;">&bull; **Password Reset:** Change all passwords for social, bank, and email accounts.</div>
+        <div style="font-size:13px; color:#92400E; margin-bottom:8px;">&bull; **2FA Activation:** Enable Two-Factor Authentication on all supported platforms.</div>
+        <div style="font-size:13px; color:#92400E; margin-bottom:8px;">&bull; **Documentation:** Do not alter or delete the original source of the incident.</div>
+        <div style="font-size:13px; color:#92400E;">&bull; **Isolation:** Disconnect compromised devices from local networks immediately.</div>
+      </div>
+      
+      <!-- COMPLAINANT SECTION -->
+      <div style="font-size:12px; font-weight:800; color:#0F172A; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:20px; border-bottom:2px solid #00D4FF; display:inline-block; padding-bottom:4px;">I. Incident Metadata</div>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:30px; background:#F8FAFC; border-radius:12px; border:1px solid #E2E8F0;">
         ${[
-          ['Name of Complainant', name],
-          ['City / Jurisdiction', `${city || 'Not Specified'} Cyber Crime Cell`],
-          ['Assigned Department', department],
-          ['Nature of Offence', categories.join(' + ')],
-        ].map(([k, v], i) => `
-        <tr style="background:${i % 2 === 0 ? '#0F172A' : '#0D1526'};">
-          <td style="padding:10px 16px; font-size:11px; color:#64748B; font-family:'Courier New',monospace; width:200px; border-bottom:1px solid rgba(255,255,255,0.04);">${k}</td>
-          <td style="padding:10px 16px; font-size:12px; color:#E2E8F0; font-weight:600; border-bottom:1px solid rgba(255,255,255,0.04);">${v}</td>
+          ['Complainant', name],
+          ['Jurisdiction', `${city || 'National'} Cyber Cell`],
+          ['FIR Reference', ref_no],
+          ['Classification', categories.join(' | ')],
+        ].map(([k, v]) => `
+        <tr>
+          <td style="padding:15px; font-size:11px; color:#94A3B8; text-transform:uppercase; font-weight:700; width:140px; border-bottom:1px solid #E2E8F0;">${k}</td>
+          <td style="padding:15px; font-size:13px; color:#1E293B; font-weight:700; border-bottom:1px solid #E2E8F0;">${v}</td>
         </tr>`).join('')}
       </table>
 
-      <!-- SECTION 2: AI ASSESSMENT -->
-      <div style="background:#1E293B; border-left:3px solid #7C3AED; padding:10px 16px; margin-bottom:12px; border-radius:0 4px 4px 0;">
-        <div style="font-size:10px; color:#A78BFA; font-family:'Courier New',monospace; letter-spacing:2px; font-weight:700; text-transform:uppercase;">&#9632; Section II — AI Classification Profile (Zephyr 7B)</div>
-      </div>
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px; border:1px solid rgba(255,255,255,0.07); border-radius:4px; overflow:hidden;">
-        <tr style="background:#0F172A;">
-          <td style="padding:10px 16px; font-size:11px; color:#64748B; font-family:'Courier New',monospace; width:200px; border-bottom:1px solid rgba(255,255,255,0.04);">Crime Categories</td>
-          <td style="padding:10px 16px; border-bottom:1px solid rgba(255,255,255,0.04);">
-            ${categories.map(c => `<span style="display:inline-block; background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.25); color:#00D4FF; padding:2px 10px; border-radius:3px; font-size:11px; margin-right:6px; font-family:'Courier New',monospace;">${c}</span>`).join('')}
-          </td>
-        </tr>
-        <tr style="background:#0D1526;">
-          <td style="padding:10px 16px; font-size:11px; color:#64748B; font-family:'Courier New',monospace; border-bottom:1px solid rgba(255,255,255,0.04);">Severity Classification</td>
-          <td style="padding:10px 16px; border-bottom:1px solid rgba(255,255,255,0.04);">
-            <span style="background:${sev.bg}; color:${sev.badge}; padding:3px 12px; border-radius:3px; font-size:11px; font-weight:700; font-family:'Courier New',monospace; letter-spacing:1px;">&#9632; ${severity.toUpperCase()}</span>
-          </td>
-        </tr>
-        <tr style="background:#0F172A;">
-          <td style="padding:10px 16px; font-size:11px; color:#64748B; font-family:'Courier New',monospace;">Routing Authority</td>
-          <td style="padding:10px 16px; font-size:12px; color:#E2E8F0; font-weight:600;">${department}</td>
-        </tr>
-      </table>
-
-      <!-- SECTION 3: BNS SECTIONS -->
-      <div style="background:#1E293B; border-left:3px solid #A78BFA; padding:10px 16px; margin-bottom:12px; border-radius:0 4px 4px 0;">
-        <div style="font-size:10px; color:#A78BFA; font-family:'Courier New',monospace; letter-spacing:2px; font-weight:700; text-transform:uppercase;">&#9632; Section III — Applicable Legal Provisions (Bharatiya Nyaya Sanhita 2024)</div>
-      </div>
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px; border:1px solid rgba(255,255,255,0.07); border-radius:4px; overflow:hidden;">
-        <tr style="background:#1E293B;">
-          <td style="padding:8px 16px; font-size:9px; color:#64748B; font-family:'Courier New',monospace; letter-spacing:2px; border-bottom:1px solid rgba(255,255,255,0.06);">#</td>
-          <td style="padding:8px 16px; font-size:9px; color:#64748B; font-family:'Courier New',monospace; letter-spacing:2px; border-bottom:1px solid rgba(255,255,255,0.06);">SECTION</td>
-          <td style="padding:8px 16px; font-size:9px; color:#64748B; font-family:'Courier New',monospace; letter-spacing:2px; border-bottom:1px solid rgba(255,255,255,0.06);">DESCRIPTION</td>
-        </tr>
-        ${bnsRows || `<tr><td colspan="3" style="padding:12px 16px; font-size:12px; color:#475569; font-style:italic;">Pending manual review by Investigating Officer.</td></tr>`}
-      </table>
-
-      <!-- SECTION 4: COMPLAINT TEXT -->
-      <div style="background:#1E293B; border-left:3px solid #F59E0B; padding:10px 16px; margin-bottom:12px; border-radius:0 4px 4px 0;">
-        <div style="font-size:10px; color:#F59E0B; font-family:'Courier New',monospace; letter-spacing:2px; font-weight:700; text-transform:uppercase;">&#9632; Section IV — Complainant's Original Statement</div>
-      </div>
-      <div style="background:#0F172A; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #F59E0B; border-radius:4px; padding:20px; margin-bottom:28px; font-size:13px; color:#94A3B8; line-height:1.9; font-family:Georgia,serif;">
-        "${original_text}"
+      <!-- AI LEGAL MATRIX -->
+      <div style="font-size:12px; font-weight:800; color:#0F172A; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:20px; border-bottom:2px solid #7C3AED; display:inline-block; padding-bottom:4px;">II. AI Legal Mapping (BNS 2024)</div>
+      <div style="margin-bottom:30px; border:1px solid #E2E8F0; border-radius:12px; overflow:hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr style="background:#0F172A;">
+             <td style="padding:12px 15px; font-size:10px; color:#FFFFFF; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Statute / Clause</td>
+             <td style="padding:12px 15px; font-size:10px; color:#FFFFFF; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Legal Description</td>
+          </tr>
+          ${(bns_sections || []).map(s => `
+          <tr>
+            <td style="padding:15px; font-size:12px; color:#7C3AED; font-weight:800; border-bottom:1px solid #E2E8F0; width:120px;">${s.split(':')[0].trim()}</td>
+            <td style="padding:15px; font-size:12px; color:#475569; border-bottom:1px solid #E2E8F0;">${s.includes(':') ? s.split(':')[1].trim() : ''}</td>
+          </tr>`).join('')}
+        </table>
       </div>
 
-      ${translated_text && translated_text !== original_text ? `
-      <!-- SECTION 4B: TRANSLATED -->
-      <div style="background:#1E293B; border-left:3px solid #22C55E; padding:10px 16px; margin-bottom:12px; border-radius:0 4px 4px 0;">
-        <div style="font-size:10px; color:#22C55E; font-family:'Courier New',monospace; letter-spacing:2px; font-weight:700; text-transform:uppercase;">&#9632; Section IV-B — Standardized English Translation (Zephyr AI)</div>
+      <!-- STATEMENT -->
+      <div style="font-size:12px; font-weight:800; color:#0F172A; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:20px; border-bottom:2px solid #64748B; display:inline-block; padding-bottom:4px;">III. Statement of Facts</div>
+      <div style="padding:24px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; font-size:14px; color:#475569; line-height:1.7; font-style:italic; margin-bottom:30px;">
+        "${translated_text || original_text}"
       </div>
-      <div style="background:#0F172A; border:1px solid rgba(255,255,255,0.07); border-left:3px solid #22C55E; border-radius:4px; padding:20px; margin-bottom:28px; font-size:13px; color:#94A3B8; line-height:1.9; font-family:Georgia,serif;">
-        "${translated_text}"
-      </div>` : ''}
 
-      <!-- SECTION 5: WHAT TO DO NOW -->
-      <div style="background:#1E293B; border-left:3px solid #EF4444; padding:10px 16px; margin-bottom:12px; border-radius:0 4px 4px 0;">
-        <div style="font-size:10px; color:#EF4444; font-family:'Courier New',monospace; letter-spacing:2px; font-weight:700; text-transform:uppercase;">&#9632; Section V — Immediate Action Required</div>
-      </div>
-      ${severity === 'Critical' || severity === 'High' ? `
-      <div style="background:#7f1d1d; border:1px solid rgba(239,68,68,0.3); border-radius:4px; padding:14px 18px; margin-bottom:16px; font-size:12px; color:#FCA5A5; font-family:'Courier New',monospace; letter-spacing:0.5px;">
-        &#9888; URGENT: If you are in immediate physical danger, call <strong>112</strong> now. For financial cyber fraud, call <strong>1930</strong> immediately to initiate bank transaction reversal.
-      </div>` : ''}
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
-        ${[
-          'Do NOT delete any evidence — screenshots, messages, transaction IDs, call recordings',
-          'Block your UPI / bank account immediately if financial fraud occurred',
-          'Do not contact or engage with the suspect — it may compromise the investigation',
-          `Track your case status at: cybershield.vercel.app/track/${ref_no}`,
-          'An investigating officer from ' + department + ' will contact you within the prescribed time',
-        ].map((step, i) => `
-        <tr>
-          <td valign="top" style="padding:0 0 10px 0;">
-            <table cellpadding="0" cellspacing="0">
-              <tr>
-                <td valign="top" style="width:28px;">
-                  <span style="display:inline-block; width:20px; height:20px; background:#1E293B; border:1px solid rgba(239,68,68,0.3); border-radius:3px; text-align:center; line-height:20px; font-size:10px; font-weight:700; color:#EF4444; font-family:'Courier New',monospace;">${i+1}</span>
-                </td>
-                <td style="padding-left:10px; font-size:12px; color:#94A3B8; line-height:1.7;">${step}</td>
-              </tr>
-            </table>
-          </td>
-        </tr>`).join('')}
-      </table>
-
-      <!-- OFFICIAL SIGN-OFF -->
-      <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid rgba(255,255,255,0.07); padding-top:24px; margin-top:8px;">
+      <!-- OFFICIAL AUTHENTICATION -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:30px; padding-top:30px; border-top:2px solid #F1F5F9;">
         <tr>
           <td>
-            <div style="font-size:12px; color:#94A3B8;">Registered and issued by authority of:</div>
-            <div style="font-size:14px; font-weight:700; color:#E2E8F0; margin-top:10px;">Inspector / System Controller</div>
-            <div style="font-size:11px; color:#64748B; font-family:'Courier New',monospace;">CyberShield AI — National Cyber Crime Intelligence Cell</div>
-            <div style="font-size:11px; color:#475569; font-family:'Courier New',monospace;">Ministry of Home Affairs, Government of India</div>
-            <div style="font-size:11px; color:#475569; font-family:'Courier New',monospace; margin-top:4px;">Helpline: 1930 (Cyber Crime) | Emergency: 112</div>
+            <div style="font-size:11px; color:#94A3B8; text-transform:uppercase; font-weight:700;">Authorized Registrar</div>
+            <div style="font-size:15px; font-weight:800; color:#0F172A; margin-top:4px;">Zephyr 7B Neural Core</div>
+            <div style="font-size:11px; color:#64748B;">National Forensic Intelligence Platform</div>
           </td>
-          <td align="right" valign="bottom">
-            <div style="font-size:9px; color:#334155; font-family:'Courier New',monospace; text-align:right; line-height:2;">
-              DIGITALLY AUTHENTICATED<br>
-              ZEPHYR 7B AI ENGINE<br>
-              ${new Date().toLocaleDateString('en-IN')}<br>
-              &#9632;&#9632;&#9632;&#9632;&#9632;&#9632;&#9632;&#9632;
-            </div>
+          <td style="text-align:right;">
+             <div style="font-size:10px; color:#94A3B8; font-family:monospace;">D-SIGNED: ${new Date().toLocaleDateString('en-GB')}<br>CERTIFICATE: CC-990-2024</div>
           </td>
         </tr>
       </table>
@@ -509,36 +365,27 @@ export async function sendFirEmail(to, data) {
 export async function sendOtpEmail(to, otp) {
   const html = `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0; padding:0; background:#0A0F1E; font-family:Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#0A0F1E; padding:30px 20px;">
+<head><meta charset="UTF-8"><title>Verification Code</title></head>
+<body style="margin:0; padding:0; background:#F1F5F9; font-family:Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#F1F5F9; padding:40px 20px;">
 <tr><td align="center">
-<table width="500" cellpadding="0" cellspacing="0" style="background:#0D1526; border-radius:4px; overflow:hidden; border:1px solid rgba(255,255,255,0.08);">
+<table width="480" cellpadding="0" cellspacing="0" style="background:#FFFFFF; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.05); border:1px solid #E2E8F0;">
   <tr>
-    <td>
-      <table width="100%" cellpadding="0" cellspacing="0" style="background:#0F172A; border-bottom:3px solid #FF6B00;">
-        <tr><td style="height:4px; background:#FF6B00;"></td></tr>
-        <tr><td style="height:4px; background:#FFFFFF;"></td></tr>
-        <tr><td style="height:4px; background:#138808;"></td></tr>
-      </table>
+    <td style="padding:40px; text-align:center;">
+      <div style="width:40px; height:40px; background:#0F172A; border-radius:8px; text-align:center; line-height:40px; color:#00D4FF; font-weight:900; font-size:20px; margin:0 auto 20px;">CS</div>
+      <div style="font-size:12px; font-weight:800; color:#64748B; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Identity Verification</div>
+      <div style="font-size:20px; font-weight:800; color:#1E293B; margin-bottom:24px;">Confirm your access</div>
+      
+      <div style="font-size:14px; color:#475569; margin-bottom:30px; line-height:1.6;">Your one-time passcode for secure access to the CyberShield portal is:</div>
+      
+      <div style="font-size:36px; font-weight:800; color:#0F172A; letter-spacing:12px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:24px; margin-bottom:30px; font-family:monospace;">${otp}</div>
+      
+      <div style="font-size:11px; color:#94A3B8; font-weight:700; text-transform:uppercase; letter-spacing:1px;">This code expires in 10 minutes.</div>
     </td>
   </tr>
   <tr>
-    <td style="padding:30px 40px; text-align:center;">
-      <div style="font-size:11px; color:#64748B; font-family:'Courier New',monospace; letter-spacing:2px; margin-bottom:8px;">GOVERNMENT OF INDIA — CYBERSHIELD INDIA</div>
-      <div style="font-size:18px; font-weight:700; color:#E2E8F0; font-family:Georgia,serif;">Secure Login Verification</div>
-    </td>
-  </tr>
-  <tr>
-    <td style="padding:0 40px 30px; text-align:center;">
-      <div style="font-size:12px; color:#94A3B8; margin-bottom:20px; line-height:1.7;">Your One-Time Password (OTP) for secure access to CyberShield Portal:</div>
-      <div style="font-size:40px; font-weight:900; color:#00D4FF; font-family:'Courier New',monospace; letter-spacing:10px; background:#0F172A; border:1px dashed rgba(0,212,255,0.3); border-radius:4px; padding:16px; margin:0 auto 16px;">${otp}</div>
-      <div style="font-size:11px; color:#64748B; font-family:'Courier New',monospace; letter-spacing:1px;">VALID FOR 10 MINUTES &nbsp;|&nbsp; DO NOT SHARE WITH ANYONE</div>
-    </td>
-  </tr>
-  <tr>
-    <td style="background:#0F172A; padding:16px 40px; border-top:1px solid rgba(255,255,255,0.06); text-align:center;">
-      <div style="font-size:10px; color:#334155; font-family:'Courier New',monospace;">CyberShield India — National Cyber Crime Intelligence Platform — DO NOT REPLY</div>
+    <td style="background:#F8FAFC; padding:20px; text-align:center; border-top:1px solid #E2E8F0;">
+      <div style="font-size:10px; color:#94A3B8;">&copy; ${new Date().getFullYear()} CyberShield India &bull; Ministry of Home Affairs</div>
     </td>
   </tr>
 </table>
@@ -563,35 +410,50 @@ export async function sendOfficerAssignmentEmail(officerEmail, data) {
 
   const html = `<!DOCTYPE html>
 <html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0; padding:0; background:#0F172A; font-family:Arial,sans-serif; color:#E2E8F0;">
-  <div style="max-width:600px; margin:20px auto; background:#0D1526; border:1px solid #1E293B; border-radius:8px; overflow:hidden;">
-    <div style="background:#1E293B; padding:20px; border-bottom:3px solid #00D4FF; text-align:center;">
-      <div style="font-size:10px; color:#64748B; letter-spacing:2px; margin-bottom:5px;">NATIONAL CYBER CRIME PORTAL</div>
-      <div style="font-size:18px; font-weight:900; color:#00D4FF;">NEW CASE ASSIGNED</div>
-    </div>
-    <div style="padding:30px;">
-      <p style="font-size:14px; color:#94A3B8;">Officer,</p>
-      <p style="font-size:15px; line-height:1.6;">You have been assigned as the <strong>Investigating Officer</strong> for a new cybercrime case. Please review the details and initiate investigation immediately.</p>
-      
-      <div style="background:#0F172A; border-radius:6px; padding:20px; margin:25px 0; border-left:4px solid ${sev.badge};">
-        <table width="100%">
-          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Reference No</td><td style="font-weight:700; color:#00D4FF; text-align:right;">${ref_no}</td></tr>
-          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Priority</td><td style="color:${sev.badge}; font-weight:800; text-align:right;">${severity.toUpperCase()}</td></tr>
-          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Category</td><td style="text-align:right;">${categories.join(' / ')}</td></tr>
-          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Complainant</td><td style="text-align:right;">${name}</td></tr>
-          <tr><td style="color:#64748B; font-size:11px; text-transform:uppercase;">Department</td><td style="text-align:right;">${department}</td></tr>
-        </table>
-      </div>
+<head><meta charset="UTF-8"><title>Case Assignment</title></head>
+<body style="margin:0; padding:0; background:#F1F5F9; font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F1F5F9; padding:40px 20px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#FFFFFF; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.05); border:1px solid #E2E8F0;">
+        <tr>
+          <td style="padding:40px; background:#0F172A;">
+            <div style="font-size:11px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px;">CyberShield Official Assignment</div>
+            <div style="font-size:24px; font-weight:800; color:#FFFFFF; margin-bottom:5px;">New Case Assigned</div>
+            <div style="font-size:12px; color:#00D4FF; font-family:monospace; font-weight:800;">REF ID: ${ref_no}</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:40px;">
+            <div style="font-size:15px; color:#475569; line-height:1.7; margin-bottom:30px;">
+              Officer, you have been designated as the **Lead Investigating Officer** for the following cybercrime report. Immediate review and triage are required.
+            </div>
+            
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:30px; border:1px solid #E2E8F0; border-radius:12px; background:#F8FAFC; overflow:hidden;">
+              ${[
+                ['Priority', severity.toUpperCase(), sev.text],
+                ['Complainant', name, '#0F172A'],
+                ['Crime Type', categories.join(' | '), '#0F172A'],
+                ['Department', department, '#0F172A'],
+              ].map(([k, v, c]) => `
+              <tr>
+                <td style="padding:15px; font-size:11px; color:#94A3B8; text-transform:uppercase; font-weight:800; border-bottom:1px solid #E2E8F0; width:120px;">${k}</td>
+                <td style="padding:15px; font-size:13px; color:${c}; font-weight:800; border-bottom:1px solid #E2E8F0;">${v}</td>
+              </tr>`).join('')}
+            </table>
 
-      <div style="text-align:center; margin-top:30px;">
-        <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}/admin" style="background:#00D4FF; color:#0A0F1E; padding:12px 24px; border-radius:6px; text-decoration:none; font-weight:900; font-size:12px; text-transform:uppercase;">Open Admin Dashboard</a>
-      </div>
-    </div>
-    <div style="background:#0F172A; padding:15px; text-align:center; font-size:10px; color:#334155; border-top:1px solid #1E293B;">
-      CONFIDENTIAL GOVT PROPERTY &copy; ${new Date().getFullYear()} CyberShield India
-    </div>
-  </div>
+            <div style="text-align:center;">
+              <a href="${process.env.CLIENT_URL}/admin" style="display:inline-block; background:#0F172A; color:#FFFFFF; padding:16px 32px; border-radius:12px; font-weight:800; font-size:14px; text-decoration:none; text-transform:uppercase; letter-spacing:1px;">Access Investigation Dashboard</a>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:30px; background:#F8FAFC; border-top:1px solid #E2E8F0; text-align:center;">
+            <div style="font-size:10px; color:#94A3B8; font-weight:700;">CLASSIFIED COMMUNICATION &bull; MINISTRY OF HOME AFFAIRS</div>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
 </body>
 </html>`;
 

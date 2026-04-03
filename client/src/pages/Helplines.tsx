@@ -1,9 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Phone, ShieldAlert, HeartHandshake, MapPin } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { isUserLoggedIn } from '../lib/auth';
+import { useAuthModal } from '../components/layout/AuthContext';
 
 export const Helplines = () => {
+  const navigate = useNavigate();
+  const { showAuthModal } = useAuthModal();
   const contacts = [
     {
       title: 'National Cyber Crime Portal',
@@ -194,9 +198,12 @@ export const Helplines = () => {
               <h3 className="text-xl font-bold text-white mb-2">Need to report a non-emergency incident?</h3>
               <p className="text-[#94A3B8]">Our AI will parse your complaint and route it to your nearest Cyber Cell instantly.</p>
             </div>
-            <Link to="/complaint" className="whitespace-nowrap bg-[#00D4FF] text-[#0A0F1E] font-bold px-8 py-3 rounded-lg hover:bg-[#00BBDD] transition shadow-[0_0_20px_rgba(0,212,255,0.3)]">
+            <button 
+              onClick={() => isUserLoggedIn() ? navigate('/complaint') : showAuthModal()} 
+              className="whitespace-nowrap bg-[#00D4FF] text-[#0A0F1E] font-bold px-8 py-3 rounded-lg hover:bg-[#00BBDD] transition shadow-[0_0_20px_rgba(0,212,255,0.3)]"
+            >
               FILE COMPLAINT
-            </Link>
+            </button>
           </motion.div>
 
         </div>

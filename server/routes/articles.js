@@ -94,7 +94,7 @@ router.get('/:slug', async (req, res) => {
 router.post('/', verifyAuth, async (req, res) => {
   try {
     const { title, category, content_markdown, tags, image_url } = req.body;
-    
+
     if (!title || !content_markdown) {
       return res.status(400).json({ error: 'Title and content are required to publish.' });
     }
@@ -102,7 +102,7 @@ router.post('/', verifyAuth, async (req, res) => {
     // NORMALIZE CATEGORY: Must match lowercase enums in schema
     const cat = category ? category.toLowerCase() : 'general';
     const slug = generateSlug(title + '-' + Math.random().toString(36).substring(7));
-    
+
     const article = await KnowledgeArticle.create({
       slug,
       title,
@@ -144,13 +144,13 @@ router.post('/generate', verifyAuth, async (req, res) => {
     for (const modelName of modelSequence) {
       try {
         console.log(`📡 Direct handshake attempt with node: ${modelName}...`);
-        
+
         // Using v1beta endpoint for compatibility with 2.5 and 2.0 models
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-        
+
         const response = await axios.post(url, {
-          contents: [{ 
-            parts: [{ 
+          contents: [{
+            parts: [{
               text: `Write a highly detailed, comprehensive, and advanced intelligence dossier (article format) about: "${topic}". 
                      You must generate at least 800 - 1200 words of deeply informative content to educate citizens completely.
                      Include the following sections:
@@ -160,7 +160,7 @@ router.post('/generate', verifyAuth, async (req, res) => {
                      4. Step-by-Step Response Protocol: A precise action plan for victims or targets (e.g., dialing 1930, preserving headers, etc).
                      5. Preventative Blueprint: Robust, advanced safety tips for future protection.
                      Output ONLY clean, readable Markdown using H2 (##) and H3 (###) headers, bullet points, and bold text. Do not output anything outside of the markdown structure. Make it read like a premium, expert-level cybercrime intelligence briefing.`
-            }] 
+            }]
           }]
         });
 
@@ -172,11 +172,11 @@ router.post('/generate', verifyAuth, async (req, res) => {
       } catch (err) {
         const statusCode = err.response?.status;
         console.warn(`🚨 Node ${modelName} direct handshake failed (${statusCode}): ${err.message}. Sequencing to next...`);
-        
+
         // If it's a 429, we handle it as a quota limit immediately if it's the last flash model
-        if (statusCode === 429 && modelName === modelSequence[modelSequence.length-1]) {
-           console.warn("⚠️ All Gemini Flash nodes exhausted (429). Initiating HuggingFace Fallback...");
-           break; 
+        if (statusCode === 429 && modelName === modelSequence[modelSequence.length - 1]) {
+          console.warn("⚠️ All Gemini Flash nodes exhausted (429). Initiating HuggingFace Fallback...");
+          break;
         }
       }
     }
@@ -186,14 +186,14 @@ router.post('/generate', verifyAuth, async (req, res) => {
       try {
         console.log("📡 Initiating HuggingFace Fallback (Zephyr-7B)...");
         const hfUrl = `https://api-inference.huggingface.co/models/${process.env.HF_MODEL_ID || 'HuggingFaceH4/zephyr-7b-beta'}`;
-        const hfRes = await axios.post(hfUrl, 
-          { 
+        const hfRes = await axios.post(hfUrl,
+          {
             inputs: `<|system|>\nYou are a professional Indian cybercrime expert. Write a detailed educational article about ${topic}.\n<|user|>\nGenerate a comprehensive guide including BNS 2024 legal sections and prevention tips.\n<|assistant|>\n`,
-            parameters: { max_new_tokens: 1024, temperature: 0.7, return_full_text: false } 
+            parameters: { max_new_tokens: 1024, temperature: 0.7, return_full_text: false }
           },
           { headers: { Authorization: `Bearer ${process.env.HF_API_TOKEN}` }, timeout: 45000 }
         );
-        
+
         const hfText = Array.isArray(hfRes.data) ? hfRes.data[0]?.generated_text : hfRes.data?.generated_text;
         if (hfText) {
           content = hfText;
@@ -243,7 +243,7 @@ router.delete('/:id', verifyAuth, async (req, res) => {
   try {
     const article = await KnowledgeArticle.findOne({ _id: req.params.id, author_id: req.user.id });
     if (!article) return res.status(404).json({ error: 'Article not found or you do not have permission to delete it.' });
-    
+
     await KnowledgeArticle.deleteOne({ _id: req.params.id });
     res.json({ message: 'Intelligence Dossier permanently erased from the network.' });
   } catch (err) {
