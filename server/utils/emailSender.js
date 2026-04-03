@@ -10,6 +10,13 @@ if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
 // ── Transporter — Dedicated CyberShield Portal Mailer ────────
 const transporter = nodemailer.createTransport({
   service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // Use STARTTLS (Port 587) for Cloud-IP compatibility
+  pool: true,
+  tls: {
+    rejectUnauthorized: false // Bypasses Render/Cloud IP handshake blocks
+  },
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_PASS

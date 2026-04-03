@@ -110,6 +110,12 @@ export const userLogin = (data: any) =>
 export const userRegister = (data: any) =>
   api.post('/api/auth/register', data);
 
+export const forgotPassword = (data: { email: string }) =>
+  api.post('/api/auth/forgot-password', data);
+
+export const resetPassword = (data: { email: string, otp_code: string, newPassword: string }) =>
+  api.post('/api/auth/reset-password', data);
+
 export const getUserProfile = () =>
   api.get('/api/auth/me');
 

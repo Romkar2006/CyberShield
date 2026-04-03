@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Shield, Eye, EyeOff, Lock, User, Mail, ArrowRight, Terminal } from 'lucide-react';
-import { userLogin, userRegister } from '../lib/api';
+import { Shield, Eye, EyeOff, Lock, User, Mail, ArrowRight, Terminal, X, KeyRound, CheckCircle2 } from 'lucide-react';
+import { userLogin, userRegister, forgotPassword, resetPassword } from '../lib/api';
 import SimpleGlobe from '../components/shared/SimpleGlobe';
 
 export const Login = () => {
@@ -22,6 +22,14 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
+  // Forgot Password State
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotStep, setForgotStep] = useState<'request' | 'reset'>('request');
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOTP, setForgotOTP] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [forgotSuccess, setForgotSuccess] = useState(false);
+
   const navigate = useNavigate();
 
   // Reset errors when tab changes
@@ -85,6 +93,47 @@ export const Login = () => {
       navigate(from);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Registration failed.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail) return setError('Email is required.');
+    setLoading(true);
+    try {
+      await forgotPassword({ email: forgotEmail });
+      setForgotStep('reset');
+      setError('');
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to send recovery code.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotOTP || !forgotNewPassword) return setError('All fields required.');
+    setLoading(true);
+    try {
+      await resetPassword({ 
+        email: forgotEmail, 
+        otp_code: forgotOTP, 
+        newPassword: forgotNewPassword 
+      });
+      setForgotSuccess(true);
+      setTimeout(() => {
+        setShowForgotModal(false);
+        setForgotSuccess(false);
+        setForgotStep('request');
+        setForgotEmail('');
+        setForgotOTP('');
+        setForgotNewPassword('');
+      }, 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Invalid code or reset failed.');
     } finally {
       setLoading(false);
     }
@@ -240,6 +289,19 @@ export const Login = () => {
                         </button>
                       </div>
 
+                      <div className="flex justify-end -mt-2">
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            setShowForgotModal(true);
+                            setError('');
+                          }}
+                          className="text-[11px] font-bold text-[#64748B] hover:text-[#00D4FF] transition-colors"
+                        >
+                          Forgot Password?
+                        </button>
+                      </div>
+
                       <button disabled={loading} type="submit" className="w-full bg-[#00D4FF] text-[#0A0F1E] font-bold py-3 rounded-lg hover:brightness-110 shadow-[0_0_20px_rgba(0,212,255,0.3)] transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         {loading ? 'Authenticating...' : 'Access Terminal'} <ArrowRight size={16} />
                       </button>
@@ -334,6 +396,129 @@ export const Login = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* ── FORGOT PASSWORD MODAL ── */}
+      <AnimatePresence>
+        {showForgotModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-0">
+             <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               className="absolute inset-0 bg-[#050B14]/80 backdrop-blur-md"
+               onClick={() => setShowForgotModal(false)}
+             />
+             
+             <motion.div 
+               initial={{ scale: 0.9, opacity: 0, y: 20 }}
+               animate={{ scale: 1, opacity: 1, y: 0 }}
+               exit={{ scale: 0.9, opacity: 0, y: 20 }}
+               className="relative z-10 w-full max-w-sm bg-[#0D1526] border border-[#1E293B] rounded-[2rem] shadow-2xl overflow-hidden"
+             >
+                <div className="bg-[#0A0F1E]/90 px-6 py-4 flex items-center justify-between border-b border-[#1E293B]">
+                  <div className="flex items-center gap-2">
+                    <KeyRound size={16} className="text-[#00D4FF]" />
+                    <span className="text-xs font-black uppercase tracking-widest text-[#64748B]">Identity Recovery</span>
+                  </div>
+                  <button onClick={() => setShowForgotModal(false)} className="text-[#64748B] hover:text-white transition-colors">
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="p-8">
+                  {forgotSuccess ? (
+                    <motion.div 
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="flex flex-col items-center text-center py-6"
+                    >
+                      <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mb-4 border border-emerald-500/30">
+                        <CheckCircle2 size={32} className="text-emerald-500" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white mb-2">Password Reset Successful</h3>
+                      <p className="text-sm text-[#64748B]">System logic updated. Please login with your new credentials.</p>
+                    </motion.div>
+                  ) : (
+                    <form onSubmit={forgotStep === 'request' ? handleForgotRequest : handleResetSubmit} className="space-y-4">
+                      <p className="text-xs text-[#64748B] mb-6 leading-relaxed">
+                        {forgotStep === 'request' 
+                          ? "Enter your registered email address. We'll transmit a secure recovery code to your inbox."
+                          : "Transmission successful. Enter the code sent to your email and your new secure password."
+                        }
+                      </p>
+
+                      {error && (
+                        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-[11px] text-red-400 flex items-center gap-2">
+                          <Shield size={12} className="shrink-0" />
+                          <span>{error}</span>
+                        </div>
+                      )}
+
+                      {forgotStep === 'request' ? (
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]" />
+                          <input 
+                            type="email" 
+                            required
+                            placeholder="Registered Email"
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                            className="w-full bg-[#0A0F1E] border border-[#1E293B] rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder:text-[#475569] focus:border-[#00D4FF] focus:outline-none transition-all"
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]" />
+                            <input 
+                              type="text" 
+                              required
+                              placeholder="6-Digit Code"
+                              maxLength={6}
+                              value={forgotOTP}
+                              onChange={(e) => setForgotOTP(e.target.value)}
+                              className="w-full bg-[#0A0F1E] border border-[#1E293B] rounded-xl py-3 pl-10 pr-4 text-sm text-white font-mono tracking-[1em] placeholder:tracking-normal placeholder:text-[#475569] focus:border-[#00D4FF] focus:outline-none transition-all"
+                            />
+                          </div>
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]" />
+                            <input 
+                              type="password" 
+                              required
+                              placeholder="New Password"
+                              value={forgotNewPassword}
+                              onChange={(e) => setForgotNewPassword(e.target.value)}
+                              className="w-full bg-[#0A0F1E] border border-[#1E293B] rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder:text-[#475569] focus:border-[#00D4FF] focus:outline-none transition-all"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      <button 
+                        disabled={loading}
+                        type="submit" 
+                        className="w-full bg-[#00D4FF] text-[#0A0F1E] font-black py-4 rounded-xl hover:brightness-110 shadow-[0_0_30px_rgba(0,212,255,0.2)] transition-all flex items-center justify-center gap-2 mt-4 text-[11px] uppercase tracking-widest disabled:opacity-50"
+                      >
+                        {loading ? 'Processing...' : (forgotStep === 'request' ? 'Request Recovery Code' : 'Update Firewall Credentials')}
+                        {!loading && <ArrowRight size={14} />}
+                      </button>
+
+                      {forgotStep === 'reset' && (
+                        <button 
+                          type="button" 
+                          onClick={() => setForgotStep('request')}
+                          className="w-full text-center text-[10px] text-[#64748B] hover:text-white mt-4 uppercase font-bold transition-colors"
+                        >
+                          Back to Email Entry
+                        </button>
+                      )}
+                    </form>
+                  )}
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
