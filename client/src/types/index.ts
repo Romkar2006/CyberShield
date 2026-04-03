@@ -56,7 +56,7 @@ export interface ClassifyResponse extends Complaint {
 export interface StatusUpdatePayload {
   ref_no: string;
   status: CaseStatus;
-  assigned_officer: string;
+  assigned_officer?: string;
   department?: string;
   note: string;
 }

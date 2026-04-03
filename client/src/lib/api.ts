@@ -110,6 +110,9 @@ export const userLogin = (data: any) =>
 export const userRegister = (data: any) =>
   api.post('/api/auth/register', data);
 
+export const getComplaints = (params: any) =>
+  api.get('/api/complaints/all', { params });
+
 export const forgotPassword = (data: { email: string }) =>
   api.post('/api/auth/forgot-password', data);
 

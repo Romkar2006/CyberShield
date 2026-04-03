@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { 
   ArrowLeft, UserPlus, Download, Ban, BrainCircuit, Activity, 
   FileText, MapPin, Grid, Users, Shield, Clock, User,
-  Database, Eye, CheckCircle2 
+  Database, Eye, CheckCircle2, Archive
 } from 'lucide-react';
 import { getCaseStatus, updateCaseStatus } from '../lib/api';
 import { Complaint, HistoryEntry } from '../types';
@@ -50,6 +50,25 @@ export const AdminCaseDetail = () => {
     setData(updated);
   };
 
+  const handleEndCase = async () => {
+    if (!data || !ref) return;
+    if (!window.confirm('Are you sure you want to end this case and mark it as RESOLVED? This action is permanent.')) return;
+    
+    try {
+      setLoading(true);
+      const res = await updateCaseStatus({
+        ref_no: ref,
+        status: 'RESOLVED',
+        note: 'Case formally ended and resolved by administrative officer.'
+      });
+      setData(res.data);
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to resolve case');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) return <div className="min-h-screen bg-[#0A0F1E] flex items-center justify-center"><PageLoader /></div>;
   if (error || !data) return <div className="min-h-screen bg-[#0A0F1E] text-white flex items-center justify-center">{error || 'Case not found'}</div>;
 
@@ -89,9 +108,15 @@ export const AdminCaseDetail = () => {
             <button className="bg-[#0F172A] border border-white/[0.1] hover:bg-white/[0.05] rounded-lg px-4 py-2 flex items-center gap-2 text-sm font-semibold transition text-[#94A3B8] hover:text-white">
               <Download size={16} /> Export Intelligence
             </button>
-            <button className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-500 rounded-lg px-5 py-2 flex items-center gap-2 text-sm font-bold transition shadow-[0_0_15px_rgba(239,68,68,0.1)] uppercase tracking-wider">
-              <Ban size={16} /> Asset Freeze
-            </button>
+            {data.status !== 'RESOLVED' && (
+              <button 
+                onClick={handleEndCase}
+                className="bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-500 rounded-lg px-5 py-2 flex items-center gap-2 text-sm font-bold transition shadow-[0_0_15px_rgba(16,185,129,0.1)] uppercase tracking-wider group"
+              >
+                <CheckCircle2 size={16} className="group-hover:scale-110 transition-transform" /> 
+                END THE CASE
+              </button>
+            )}
           </div>
         </div>
 

@@ -11,11 +11,13 @@ if (!process.env.GMAIL_USER || !process.env.GMAIL_PASS) {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // Use STARTTLS (Port 587) for Cloud-IP compatibility
+  port: 2525, // Alternative SMTP port to bypass Render/Cloud firewall blocks
+  secure: false, 
   pool: true,
+  connectionTimeout: 15000, // Extend timeout for cloud network stability
+  greetingTimeout: 15000,
   tls: {
-    rejectUnauthorized: false // Bypasses Render/Cloud IP handshake blocks
+    rejectUnauthorized: false
   },
   auth: {
     user: process.env.GMAIL_USER,
