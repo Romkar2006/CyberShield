@@ -173,6 +173,69 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// ── FORGOT / RESET PASSWORD ───────────────────────────────
+
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required.' });
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    
+    // Allow any registered user to reset/set their password via this flow
+    if (!user) {
+       // We still send a success message to prevent user enumeration attacks
+       return res.json({ success: true, message: 'If an account exists, a recovery code has been sent.' });
+    }
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    user.otp_code = otp;
+    user.otp_expires_at = new Date(Date.now() + 15 * 60 * 1000); // 15 Minute window
+    await user.save();
+
+    console.log(`[Identity-Recovery] Secure Code: ${otp} transmitted to ${user.email}`);
+
+    await sendOtpEmail(user.email, otp);
+    res.json({ success: true, message: 'Recovery OTP sent to your registered email.' });
+  } catch (err) {
+    console.error('[Identity-Recovery] Critical Error:', err.message);
+    res.status(500).json({ error: 'Server error during recovery request.' });
+  }
+});
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, otp_code, newPassword } = req.body;
+
+    if (!email || !otp_code || !newPassword) {
+      return res.status(400).json({ error: 'Email, OTP, and New Password are required.' });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user || user.otp_code !== otp_code) {
+      return res.status(401).json({ error: 'Invalid or expired recovery code.' });
+    }
+
+    if (user.otp_expires_at < new Date()) {
+      return res.status(401).json({ error: 'Recovery code has expired.' });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    user.password_hash = await bcrypt.hash(newPassword, salt);
+    
+    // Clear recovery state
+    user.otp_code = null;
+    user.otp_expires_at = null;
+    await user.save();
+
+    res.json({ success: true, message: 'Password reset successful. You can now login.' });
+  } catch (err) {
+    console.error('Reset Password Error:', err);
+    res.status(500).json({ error: 'Server error during password reset.' });
+  }
+});
+
 // ── PROFILE MANAGEMENT ───────────────────────────────────────
 
 router.get('/me', verifyUser, async (req, res) => {
