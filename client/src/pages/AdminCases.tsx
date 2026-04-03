@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Filter, Download, AlertCircle, RefreshCw } from 'lucide-react';
-import { getDashboard } from '../lib/api';
+import { Search, Filter, Download, AlertCircle, RefreshCw, Activity, Archive } from 'lucide-react';
+import { getComplaints } from '../lib/api';
 import { Complaint } from '../types';
 import { PageLoader } from '../components/shared/PageLoader';
 
@@ -12,14 +12,38 @@ export const AdminCases = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [severityFilter, setSeverityFilter] = useState('ALL');
+  
+  // Folder View State
+  const [viewMode, setViewMode] = useState<'ACTIVE' | 'RESOLVED'>('ACTIVE');
+  
+  // Pagination State
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchCases = async () => {
     try {
       setLoading(true);
-      const res = await getDashboard();
-      setComplaints(res.data.complaints);
+      const res = await getComplaints({ 
+        page, 
+        limit: 10,
+        search: searchTerm,
+        status: viewMode === 'RESOLVED' ? 'RESOLVED' : statusFilter,
+        severity: severityFilter
+      });
+      
+      // Filter out RESOLVED cases from ACTIVE view if status filter is NONE
+      let results = res.data.complaints || [];
+      if (viewMode === 'ACTIVE' && statusFilter === 'ALL') {
+        results = results.filter((c: any) => c.status !== 'RESOLVED');
+      }
+      
+      setComplaints(results);
+      setTotalPages(res.data.totalPages || 1);
+      setTotalCount(viewMode === 'ACTIVE' ? (res.data.totalCount - (res.data.resolvedCount || 0)) : (res.data.resolvedCount || 0));
       setError('');
     } catch (err: any) {
+      console.error('[SOC-ERROR] Record sync failure:', err);
       setError(err.response?.data?.error || 'Failed to connect to investigations database');
     } finally {
       setLoading(false);
@@ -28,7 +52,16 @@ export const AdminCases = () => {
 
   useEffect(() => {
     fetchCases();
-  }, []);
+  }, [page, statusFilter, severityFilter]);
+
+  // Handle search with a small delay or manual trigger
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPage(1); // Reset to page 1 on search
+      fetchCases();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
@@ -65,16 +98,29 @@ export const AdminCases = () => {
   });
 
   return (
-    <div className="w-full relative flex flex-col gap-8">
-      {/* Local header removed and handled by global AdminHeader */}
+    <div className="w-full relative flex flex-col gap-6">
       
+      {/* ── FOLDER NAVIGATION ── */}
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-8 bg-cyan-dark rounded-full"></div>
-          <div>
-            <h2 className="text-sm font-black text-white uppercase tracking-wider">Investigations Directory</h2>
-            <p className="text-[9px] text-[#475569] font-bold uppercase tracking-widest mt-0.5">{complaints.length} Total Registered Files • Global Sync Active</p>
-          </div>
+        <div className="flex items-center gap-6">
+          <button 
+            onClick={() => { setViewMode('ACTIVE'); setPage(1); setStatusFilter('ALL'); }}
+            className={`flex items-center gap-2 pb-2 border-b-2 transition-all ${viewMode === 'ACTIVE' ? 'border-[#00D4FF] text-white' : 'border-transparent text-[#64748B] hover:text-[#94A3B8]'}`}
+          >
+            <Activity size={16} />
+            <span className="text-[10px] font-black uppercase tracking-widest">Active Investigations</span>
+          </button>
+          <button 
+            onClick={() => { setViewMode('RESOLVED'); setPage(1); setStatusFilter('RESOLVED'); }}
+            className={`flex items-center gap-2 pb-2 border-b-2 transition-all ${viewMode === 'RESOLVED' ? 'border-[#00D4FF] text-white' : 'border-transparent text-[#64748B] hover:text-[#94A3B8]'}`}
+          >
+            <Archive size={16} />
+            <span className="text-[10px] font-black uppercase tracking-widest">Resolved Records</span>
+          </button>
+        </div>
+        
+        <div className="text-[9px] text-[#475569] font-bold uppercase tracking-widest mt-0.5">
+          {viewMode === 'ACTIVE' ? 'Live Forensic Feed' : 'Historical Audit Sync'} Active
         </div>
       </div>
 
@@ -163,14 +209,14 @@ export const AdminCases = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.04]">
-              {filteredComplaints.length === 0 && !loading && !error && (
+              {!loading && complaints.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-[#64748B] text-sm">
                     No complaints found matching your filters.
                   </td>
                 </tr>
               )}
-              {filteredComplaints.map((comp) => (
+              {complaints.map((comp) => (
                 <tr key={comp.ref_no} className="hover:bg-white/[0.02] transition-colors cursor-pointer group">
                   <td className="py-4 px-6 text-sm font-mono text-[#94A3B8]">{comp.ref_no}</td>
                   <td className="py-4 px-6 text-sm text-[#94A3B8]">{new Date(comp.createdAt!).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
@@ -193,6 +239,46 @@ export const AdminCases = () => {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* ── PAGINATION CONTROLLER ── */}
+        <div className="bg-[#0F172A] border-t border-white/[0.06] px-6 py-4 flex items-center justify-between">
+          <div className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest">
+            Showing Page {page} of {totalPages}
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              disabled={page === 1}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              className="p-2 rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+            </button>
+            
+            <div className="flex items-center gap-1 mx-2">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNum = i + 1;
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPage(pageNum)}
+                    className={`w-8 h-8 rounded-lg text-[10px] font-black transition-all border ${page === pageNum ? 'bg-[#00D4FF] border-[#00D4FF] text-[#0A0F1E]' : 'bg-[#0A0F1E] border-white/10 text-[#64748B] hover:text-white hover:border-white/20'}`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+              {totalPages > 5 && <span className="text-[#64748B] mx-1">...</span>}
+            </div>
+
+            <button 
+              disabled={page === totalPages}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              className="px-4 py-2 rounded-lg bg-[#00D4FF]/10 border border-[#00D4FF]/20 text-[#00D4FF] text-[10px] font-bold uppercase tracking-widest hover:bg-[#00D4FF]/20 disabled:opacity-30 transition-all flex items-center gap-2"
+            >
+              Next Page <RefreshCw size={10} className={loading ? 'animate-spin' : ''} />
+            </button>
+          </div>
         </div>
       </div>
 
