@@ -102,6 +102,54 @@ router.post('/classify', async (req, res) => {
   }
 });
 
+// ── GET /api/complaints/all (admin - Paginated) ─────────────
+router.get('/all', verifyAdmin, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { search, status, severity } = req.query;
+    const filter = {};
+
+    // 1. Correctly handle 'ALL' filters as a total pass-through
+    if (search && search.trim() !== '') {
+      filter.$or = [
+        { ref_no: { $regex: search, $options: 'i' } },
+        { victim_name: { $regex: search, $options: 'i' } },
+        { city: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    if (status && status !== 'ALL') {
+      filter.status = status;
+    }
+    
+    if (severity && severity !== 'ALL') {
+      filter.severity = severity;
+    }
+
+    const [complaints, totalCount] = await Promise.all([
+      Complaint.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select('-victim_email -__v'),
+      Complaint.countDocuments(filter)
+    ]);
+
+    res.json({
+      complaints,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page
+    });
+  } catch (err) {
+    console.error('[Admin-Audit] Records Retrieval Failure:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve investigation records' });
+  }
+});
+
 // ── GET /api/complaints/:ref_no ──────────────────────────────
 router.get('/:ref_no', async (req, res) => {
   try {
@@ -184,6 +232,54 @@ router.get('/user/my-cases', verifyUser, async (req, res) => {
   } catch (err) {
     console.error('Get my-cases error:', err);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ── GET /api/complaints/all (admin - Paginated) ─────────────
+router.get('/all', verifyAdmin, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { search, status, severity } = req.query;
+    const filter = {};
+
+    // 1. Correctly handle 'ALL' filters as a total pass-through
+    if (search && search.trim() !== '') {
+      filter.$or = [
+        { ref_no: { $regex: search, $options: 'i' } },
+        { victim_name: { $regex: search, $options: 'i' } },
+        { city: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    if (status && status !== 'ALL') {
+      filter.status = status;
+    }
+    
+    if (severity && severity !== 'ALL') {
+      filter.severity = severity;
+    }
+
+    const [complaints, totalCount] = await Promise.all([
+      Complaint.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select('-victim_email -__v'),
+      Complaint.countDocuments(filter)
+    ]);
+
+    res.json({
+      complaints,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page
+    });
+  } catch (err) {
+    console.error('[Admin-Audit] Records Retrieval Failure:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve investigation records' });
   }
 });
 
