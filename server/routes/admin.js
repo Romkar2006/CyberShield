@@ -5,6 +5,7 @@ import { verifyAdmin } from '../middleware/auth.js';
 
 import crypto from 'crypto';
 import bcrypt from 'bcryptjs';
+import { sendOtpEmail } from '../utils/emailSender.js';
 
 const router = express.Router();
 
@@ -57,7 +58,6 @@ router.post('/setup/request', async (req, res) => {
     admin.otp_expires_at = otp_expires_at;
     await admin.save();
 
-    const { sendOtpEmail } = await import('../utils/emailSender.js');
     await sendOtpEmail(admin.email, otp);
 
     res.json({ success: true, message: 'OTP sent to government email for verification.' });
@@ -140,7 +140,6 @@ router.post('/login/request', async (req, res) => {
     admin.otp_expires_at = otp_expires_at;
     await admin.save();
 
-    const { sendOtpEmail } = await import('../utils/emailSender.js');
     await sendOtpEmail(admin.email, otp);
 
     res.json({ success: true, message: 'OTP sent to your email.' });
