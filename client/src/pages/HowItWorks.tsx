@@ -1,8 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Languages, BrainCircuit, Scale, Zap, FileSearch } from 'lucide-react';
+import { isUserLoggedIn } from '../lib/auth';
+import { useAuthModal } from '../components/layout/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export const HowItWorks = () => {
+  const navigate = useNavigate();
+  const { showAuthModal } = useAuthModal();
   const steps = [
     {
       icon: <Languages className="w-8 h-8 text-[#00D4FF]" />,
@@ -148,7 +153,10 @@ export const HowItWorks = () => {
             <p className="text-[#94A3B8] mb-8 max-w-xl mx-auto">
               Our AI pipeline is active 24/7. Filing a report takes less than 3 minutes.
             </p>
-            <button onClick={() => window.location.href='/complaint'} className="bg-[#00D4FF] text-[#0A0F1E] font-bold px-8 py-3 rounded-lg hover:bg-[#00BBDD] transition shadow-[0_0_20px_rgba(0,212,255,0.3)] hover:shadow-[0_0_30px_rgba(0,212,255,0.5)]">
+            <button 
+              onClick={() => isUserLoggedIn() ? navigate('/complaint') : showAuthModal()} 
+              className="bg-[#00D4FF] text-[#0A0F1E] font-bold px-8 py-3 rounded-lg hover:bg-[#00BBDD] transition shadow-[0_0_20px_rgba(0,212,255,0.3)] hover:shadow-[0_0_30px_rgba(0,212,255,0.5)]"
+            >
               FILE POLICE COMPLAINT
             </button>
           </div>

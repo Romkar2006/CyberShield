@@ -51,7 +51,9 @@ export const Login = () => {
       const res = await userLogin({ email: loginEmail, password: loginPassword });
       localStorage.setItem('cybershield_user_token', res.data.token);
       localStorage.setItem('cybershield_user_name', res.data.user.name);
-      navigate('/dashboard');
+      
+      const from = new URLSearchParams(window.location.search).get('from') || '/dashboard';
+      navigate(from);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Invalid credentials or server offline.');
     } finally {
@@ -78,7 +80,9 @@ export const Login = () => {
       const res = await userRegister({ name: signupName, email: signupEmail, password: signupPassword });
       localStorage.setItem('cybershield_user_token', res.data.token);
       localStorage.setItem('cybershield_user_name', res.data.user.name);
-      navigate('/dashboard');
+      
+      const from = new URLSearchParams(window.location.search).get('from') || '/dashboard';
+      navigate(from);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Registration failed.');
     } finally {
@@ -324,10 +328,6 @@ export const Login = () => {
 
           {/* Bottom Footer Links */}
           <div className="mt-8 flex flex-col items-center gap-4 text-sm font-medium">
-            <Link to="/complaint" className="text-[#94A3B8] hover:text-white border-b border-transparent hover:border-white transition-all flex items-center gap-1">
-              File Complaint Without Account <ArrowRight size={14} />
-            </Link>
-            <div className="h-px w-8 bg-white/[0.05]"></div>
             <Link to="/admin/login" className="text-[#00D4FF] hover:text-cyan-300 transition-colors flex items-center gap-1 opacity-80 pt-1">
               System Administrator Access →
             </Link>

@@ -53,30 +53,30 @@ router.post('/classify', async (req, res) => {
     // 12. Save to MongoDB
     const complaint = await Complaint.create({
       ref_no,
-      original_text:    cleanText,
-      translated_text:  english_text,
+      original_text: cleanText,
+      translated_text: english_text,
       detected_language,
       categories,
       severity,
       department,
       bns_sections,
-      victim_email:     email.toLowerCase().trim(),
-      victim_name:      name.trim(),
-      victim_phone:     phone || '',
-      city:             city || '',
+      victim_email: email.toLowerCase().trim(),
+      victim_name: name.trim(),
+      victim_phone: phone || '',
+      city: city || '',
       location,
-      evidence_url:     evidence_url || null,
+      evidence_url: evidence_url || null,
       history: [{
-        status:     'RECEIVED',
+        status: 'RECEIVED',
         changed_by: 'system',
-        note:       'Complaint submitted via CyberShield AI portal',
-        timestamp:  new Date()
+        note: 'Complaint submitted via CyberShield AI portal',
+        timestamp: new Date()
       }]
     });
 
     // 13. Async operations — fire them and catch separately for better debug visibility
     extractAndStoreEntities(cleanText, ref_no).catch(err => console.error(`[ComplaintRoute] Entity extraction failed for ${ref_no}:`, err));
-    
+
     // We await these in production if we suspect silent failures, 
     // although this adds 1-2 seconds to the response time.
     Promise.all([
@@ -120,7 +120,7 @@ router.get('/:ref_no', async (req, res) => {
 router.post('/update', verifyAdmin, async (req, res) => {
   try {
     const { ref_no, status, assigned_officer, department, note } = req.body;
-    
+
     const allowed = ['RECEIVED', 'ASSIGNED', 'UNDER_INVESTIGATION', 'RESOLVED'];
     if (!ref_no || !status) {
       return res.status(400).json({ error: 'ref_no and status are required' });
@@ -132,8 +132,8 @@ router.post('/update', verifyAdmin, async (req, res) => {
     const historyEntry = {
       status,
       changed_by: assigned_officer || req.admin?.email || 'admin',
-      note:       note || '',
-      timestamp:  new Date()
+      note: note || '',
+      timestamp: new Date()
     };
 
     const updateFields = { status };
@@ -143,7 +143,7 @@ router.post('/update', verifyAdmin, async (req, res) => {
     const updated = await Complaint.findOneAndUpdate(
       { ref_no },
       {
-        $set:  updateFields,
+        $set: updateFields,
         $push: { history: historyEntry }
       },
       { new: true, select: '-victim_email -__v' }
