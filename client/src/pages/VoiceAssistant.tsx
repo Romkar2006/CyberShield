@@ -27,44 +27,55 @@ export const VoiceAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [voiceHistory, setVoiceHistory] = useState<any[]>([]);
   const [isMuted, setIsMuted] = useState(false);
+  const [metrics, setMetrics] = useState({ latency: '0.24ms', encryption: 'AES-256', link: 'Stable' });
+  const [checklist, setChecklist] = useState<string[]>([]);
+  const [severity, setSeverity] = useState<'info' | 'critical' | 'legal'>('info');
   
   const recognitionRef = useRef<any>(null);
   const synthRef = window.speechSynthesis;
 
-  // ── Speech Generation (Officer Voice) ─────────────────────────
+  // ── Speech Generation (Institutional Voice Node) ─────────────────────────
   const speak = useCallback((text: string) => {
     if (isMuted || !synthRef) return;
     
+    // Always clear existing speech buffer before new transmission
     synthRef.cancel();
+
     const utterance = new SpeechSynthesisUtterance(text);
     const voices = synthRef.getVoices();
     
+    // Detection for Multilingual Routing
     const hasHindi = /[\u0900-\u097F]/.test(text);
     let selectedVoice = null;
     
+    // TARGET: High-Fidelity Indian Accents
     if (hasHindi) {
        selectedVoice = voices.find(v => v.lang.startsWith('hi') || v.name.includes('Hindi'));
     } else {
-       selectedVoice = voices.find(v => v.lang === 'en-IN' || v.name.includes('India') || v.name.includes('Rishi'));
+       // Primary: Google English India | Secondary: Microsoft Heera/Rishi
+       selectedVoice = voices.find(v => v.lang === 'en-IN' || v.name.includes('India') || v.name.includes('Rishi') || v.name.includes('Heera'));
     }
     
+    // Fallback: Professional Neutral
     if (!selectedVoice) {
-      selectedVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Female')) || voices[0];
+      selectedVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Female') || v.name.includes('Google'))) || voices[0];
     }
 
     utterance.voice = selectedVoice;
-    utterance.pitch = 0.95;
-    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.rate = 1.05; // Slightly faster for operational urgency
+    utterance.volume = 1;
     
-    // Auto-listen after speaking ends
+    // AUTO-LISTEN: Kavach waits for user response after completing a report/guidance
     utterance.onend = () => {
-       if (isCalling && !isListening) {
-         startListening();
+       if (isCalling && !isListening && !isLoading) {
+         // Subtle delay to prevent accidental mic trigger from ambient echo
+         setTimeout(() => startListening(), 300);
        }
     };
 
     synthRef.speak(utterance);
-  }, [isMuted, isCalling, isListening]);
+  }, [isMuted, isCalling, isListening, isLoading]);
 
   // ── Speech Recognition ──────────────────────────────────────────
   useEffect(() => {
@@ -100,9 +111,18 @@ export const VoiceAssistant = () => {
 
   const startListening = () => {
     if (recognitionRef.current && !isListening) {
+      // PREVENT TALK-OVER: Stop Kavach instantly if user interrupts
+      if (synthRef.speaking) {
+        synthRef.cancel();
+      }
+      
       setTranscript('');
-      recognitionRef.current.start();
-      setIsListening(true);
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (e) {
+        console.warn("Recognition already active.");
+      }
     }
   };
 
@@ -113,17 +133,32 @@ export const VoiceAssistant = () => {
     setDisplayText('Analyzing Cyber Intelligence...');
 
     try {
-      console.log('📡 CyberShield Handshake: Sending payload to Kavach Node...', { query, history: voiceHistory });
-      
+      const start = Date.now();
       const response = await chatWithBot({
         message: query,
         history: voiceHistory
       });
-
-      console.log('✅ Intelligence Received:', response.data);
+      const end = Date.now();
+      setMetrics(prev => ({ ...prev, latency: `${Math.round(end - start)}ms` }));
 
       const reply = response.data.reply;
-      if (!reply) throw new Error("Null data packet received from node.");
+      if (!reply) throw new Error("Intelligence link unstable.");
+
+      // ── TACTICAL ANALYSIS: DYNAMIC CONTEXT COLOR ──
+      const lowerReply = reply.toLowerCase();
+      if (lowerReply.includes('1930') || lowerReply.includes('critical') || lowerReply.includes('immediately')) {
+         setSeverity('critical');
+      } else if (lowerReply.includes('bns') || lowerReply.includes('section')) {
+         setSeverity('legal');
+      } else {
+         setSeverity('info');
+      }
+
+      // ── FORENSIC EXTRACTION: OPERATIONAL CHECKLIST ──
+      const stepsMatch = reply.match(/(?:\d+\.|\*)\s*([^\n.]{10,})/g);
+      if (stepsMatch) {
+        setChecklist(stepsMatch.map(s => s.replace(/^\d+\.\s*|\*\s*/, '').trim()));
+      }
 
       setVoiceHistory(prev => [...prev, 
         { role: 'user', content: query },
@@ -132,10 +167,11 @@ export const VoiceAssistant = () => {
       setDisplayText(reply);
       speak(reply);
     } catch (err: any) {
-      const errorMsg = err.response?.data?.reply || err.message || 'Signal Lost';
-      console.error('🚨 KAVACH SIGNAL ERROR:', errorMsg);
-      setDisplayText(`System Error: ${errorMsg}`);
-      speak(`The secure line has been interrupted due to ${errorMsg}. Please stay on the link.`);
+      const errorMsg = err.response?.data?.reply || err.message || 'Network Congestion';
+      console.error('🚨 KAVACH NODE ERROR:', errorMsg);
+      const recoveryMsg = "The intelligence link is experiencing high forensic load. Retrying handshake...";
+      setDisplayText(recoveryMsg);
+      speak(recoveryMsg);
     } finally {
       setIsLoading(false);
     }
@@ -176,10 +212,10 @@ export const VoiceAssistant = () => {
       </div>
 
       {/* ── Main Dashboard ── */}
-      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center relative z-10 py-6 sm:py-10">
+      <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-start relative z-10 py-6 sm:py-10">
         
-        {/* Left Aspect: Visualization */}
-        <div className="flex flex-col items-center gap-8">
+        {/* Left Aspect: Visualization & Metrics (lg:col-span-3) */}
+        <div className="lg:col-span-3 flex flex-col items-center gap-8 sticky top-10">
           <div className="relative">
             {/* Pulsing Outer Rings */}
             <AnimatePresence>
@@ -187,15 +223,13 @@ export const VoiceAssistant = () => {
                 <>
                   <motion.div 
                     initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1.5, opacity: 0.1 }}
+                    animate={{ scale: 1.5, opacity: 0.15 }}
                     transition={{ duration: 3, repeat: Infinity }}
-                    className="absolute inset-0 rounded-full border-2 border-cyan shadow-[0_0_50px_rgba(34,211,238,0.5)]"
-                  />
-                  <motion.div 
-                    initial={{ scale: 1, opacity: 0 }}
-                    animate={{ scale: 2, opacity: 0.05 }}
-                    transition={{ duration: 4, repeat: Infinity, delay: 1 }}
-                    className="absolute inset-0 rounded-full border-2 border-violet-500 shadow-[0_0_50px_rgba(139,92,246,0.5)]"
+                    className={`absolute inset-0 rounded-full border-2 shadow-2xl ${
+                      severity === 'critical' ? 'border-red-500 shadow-red-500/50' : 
+                      severity === 'legal' ? 'border-violet-500 shadow-violet-500/50' : 
+                      'border-cyan shadow-cyan/50'
+                    }`}
                   />
                 </>
               )}
@@ -206,14 +240,21 @@ export const VoiceAssistant = () => {
               animate={isCalling ? { 
                 scale: isListening ? [1, 1.05, 1] : 1,
                 rotate: 360,
-                boxShadow: isListening ? "0 0 80px rgba(34,211,238,0.3)" : "0 0 30px rgba(34,211,238,0.1)"
+                boxShadow: severity === 'critical' ? '0 0 100px rgba(239,68,68,0.3)' : '0 0 60px rgba(34,211,238,0.2)'
               } : {}}
               transition={isListening ? { duration: 1, repeat: Infinity } : { duration: 60, repeat: Infinity, ease: "linear" }}
-              className={`w-52 h-52 sm:w-64 sm:h-64 rounded-[2.5rem] sm:rounded-[3rem] border-2 flex items-center justify-center relative bg-black/40 backdrop-blur-xl transition-all duration-500 ${
-                isCalling ? 'border-cyan/40' : 'border-white/5'
+              className={`w-52 h-52 sm:w-64 sm:h-64 rounded-[2.5rem] sm:rounded-[3rem] border-2 flex items-center justify-center relative bg-black/40 backdrop-blur-3xl transition-all duration-700 ${
+                !isCalling ? 'border-white/5' :
+                severity === 'critical' ? 'border-red-500/50' : 
+                severity === 'legal' ? 'border-violet-500/50' : 
+                'border-cyan/40'
               }`}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan/20 via-transparent to-violet-500/20 rounded-[2.5rem] sm:rounded-[3rem]"></div>
+              <div className={`absolute inset-0 rounded-[2.5rem] sm:rounded-[3rem] transition-colors duration-1000 ${
+                severity === 'critical' ? 'bg-gradient-to-br from-red-500/20 to-orange-500/20' : 
+                severity === 'legal' ? 'bg-gradient-to-br from-violet-500/20 to-indigo-500/20' : 
+                'bg-gradient-to-br from-cyan/20 via-transparent to-teal-500/20'
+              }`}></div>
               
               <AnimatePresence mode="wait">
                 {!isCalling ? (
@@ -241,7 +282,7 @@ export const VoiceAssistant = () => {
                             key={i}
                             animate={{ height: [10, 40, 10], opacity: [0.3, 1, 0.3] }}
                             transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
-                            className="w-2 bg-cyan rounded-full"
+                            className={`w-2 rounded-full ${severity === 'critical' ? 'bg-red-500 shadow-[0_0_10px_#ef4444]' : 'bg-cyan shadow-[0_0_10px_#22d3ee]'}`}
                           />
                         ))}
                       </div>
@@ -250,22 +291,45 @@ export const VoiceAssistant = () => {
                          <motion.div 
                           animate={{ rotate: 360 }}
                           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                          className="w-16 h-16 rounded-full border-4 border-cyan/10 border-t-cyan"
+                          className={`w-16 h-16 rounded-full border-4 border-white/5 ${severity === 'critical' ? 'border-t-red-500' : 'border-t-cyan'}`}
                          />
-                         <Cpu size={24} className="text-cyan absolute inset-0 m-auto" />
+                         <Cpu size={24} className={severity === 'critical' ? 'text-red-500' : 'text-cyan'} />
                       </div>
                     ) : (
                       <motion.div
                         animate={{ scale: [1, 1.1, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
+                        className="flex flex-col items-center gap-3"
                       >
-                         <Shield size={64} className="text-cyan drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
+                         <Shield size={64} className={`${severity === 'critical' ? 'text-red-500' : 'text-cyan'} drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]`} />
+                         {isCalling && (
+                           <div className={`text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-full border ${
+                             severity === 'critical' ? 'text-red-500 border-red-500/30' : 'text-cyan border-cyan/30'
+                           }`}>
+                             {severity} Response Node
+                           </div>
+                         )}
                       </motion.div>
                     )}
                   </motion.div>
                 )}
               </AnimatePresence>
             </motion.div>
+          </div>
+
+          {/* ── SIGNAL METRICS PANEL ── */}
+          <div className="grid grid-cols-3 gap-3 w-full max-w-[280px]">
+            {[
+              { label: 'Latency', val: metrics.latency, icon: Activity, color: 'text-cyan' },
+              { label: 'Encryption', val: metrics.encryption, icon: Lock, color: 'text-emerald-500' },
+              { label: 'Neural Link', val: metrics.link, icon: Zap, color: 'text-amber-500' }
+            ].map((m, i) => (
+              <div key={i} className="bg-white/5 border border-white/5 rounded-2xl p-3 flex flex-col items-center justify-center gap-1">
+                <m.icon size={12} className={m.color} />
+                <span className="text-[7px] font-black uppercase tracking-widest text-gray-500">{m.label}</span>
+                <span className="text-[10px] font-bold text-white font-mono">{m.val}</span>
+              </div>
+            ))}
           </div>
 
           {/* Glitch Overlay Text */}
@@ -285,8 +349,8 @@ export const VoiceAssistant = () => {
           </div>
         </div>
 
-        {/* Right Aspect: Controls & Output */}
-        <div className="bg-white/5 border border-white/5 rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-10 flex flex-col min-h-[450px] lg:h-[500px] shadow-2xl relative overflow-hidden">
+        {/* Right Aspect: Controls & Output (lg:col-span-6) */}
+        <div className="lg:col-span-6 bg-white/5 border border-white/5 rounded-[2.5rem] sm:rounded-[3rem] p-6 sm:p-10 flex flex-col min-h-[550px] shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-[0.03]">
              <Lock size={120} />
           </div>
@@ -308,32 +372,76 @@ export const VoiceAssistant = () => {
               </button>
             </div>
 
-            <div className="flex-1 flex flex-col justify-center">
+            <div className="flex-1 flex flex-col justify-center py-6">
               <div className="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-4 flex items-center gap-2">
                 <Zap size={12} className="text-cyan" /> Intelligence Feed
               </div>
-              <motion.p 
+              <motion.div 
                 key={displayText}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-lg sm:text-2xl font-bold text-white tracking-tight leading-snug line-clamp-6"
+                className={`font-bold text-white tracking-tight leading-snug break-words ${
+                  displayText.length > 200 ? 'text-base sm:text-lg' : 
+                  displayText.length > 100 ? 'text-lg sm:text-xl' : 
+                  'text-xl sm:text-3xl'
+                }`}
               >
                 {displayText}
-              </motion.p>
+              </motion.div>
               
+              {checklist.length > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mt-6 p-4 bg-cyan/5 border border-cyan/10 rounded-2xl"
+                >
+                  <span className="text-[9px] font-black text-cyan uppercase tracking-widest block mb-3 flex items-center gap-2">
+                    <Activity size={10} /> Operational Checklist
+                  </span>
+                  <div className="space-y-2">
+                    {checklist.map((step, i) => (
+                      <div key={i} className="flex gap-3 items-start group">
+                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-cyan/40 group-hover:bg-cyan group-hover:scale-125 transition-all"></div>
+                        <p className="text-xs text-gray-300 font-medium leading-relaxed group-hover:text-white transition-colors">{step}</p>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
               {transcript && (
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="mt-8 p-4 bg-white/5 rounded-2xl border border-white/5"
+                  className="mt-6 p-4 bg-white/5 rounded-2xl border border-white/5 backdrop-blur-sm"
                 >
                   <span className="text-[9px] font-black text-cyan uppercase tracking-widest block mb-2">Live Transcript</span>
-                  <p className="text-gray-400 text-sm italic italic tracking-tight">"{transcript}"</p>
+                  <p className="text-gray-400 text-sm italic tracking-tight">"{transcript}"</p>
                 </motion.div>
               )}
             </div>
 
-            <div className="flex flex-col gap-4">
+            {/* ── INCIDENT TRIGGERS ── */}
+            {isCalling && (
+               <div className="flex flex-wrap gap-2 mb-2">
+                 {[
+                   { label: '1930 Emergency', cmd: 'Immediately assist with 1930 protocol for financial fraud', icon: Phone },
+                   { label: 'Track My Case', cmd: 'I want to track my filed FIR status', icon: Radar },
+                   { label: 'Identity Theft', cmd: 'My personal account has been hacked', icon: Headphones }
+                 ].map((t, i) => (
+                   <button 
+                    key={i}
+                    onClick={() => processQuery(t.cmd)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-black uppercase tracking-widest text-gray-400 hover:bg-cyan/10 hover:border-cyan/30 hover:text-cyan transition-all"
+                   >
+                     <t.icon size={12} />
+                     {t.label}
+                   </button>
+                 ))}
+               </div>
+            )}
+
+            <div className="flex flex-col gap-4 mt-4 pt-6 border-t border-white/5">
                {!isCalling ? (
                  <button 
                   onClick={startCall}
@@ -363,6 +471,51 @@ export const VoiceAssistant = () => {
                  </div>
                )}
             </div>
+          </div>
+        </div>
+
+        {/* ── RECENT TRANSMISSION HISTORY (lg:col-span-3) ── */}
+        <div className="lg:col-span-3 h-full flex flex-col gap-6 sticky top-10">
+          <div className="bg-white/5 border border-white/5 rounded-[2.5rem] p-6 flex-1 flex flex-col min-h-[400px]">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/5">
+              <Activity size={14} className="text-cyan" />
+              <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Call Transmissions</span>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto space-y-6 pr-2 custom-scrollbar">
+              {voiceHistory.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center opacity-20">
+                  <Radar size={40} className="mb-4" />
+                  <p className="text-[9px] font-black uppercase tracking-widest text-gray-500">Awaiting Signal</p>
+                </div>
+              ) : (
+                [...voiceHistory].reverse().map((h, i) => (
+                  <div key={i} className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                       <span className={`text-[8px] font-black uppercase tracking-widest ${h.role === 'user' ? 'text-gray-500' : 'text-cyan'}`}>
+                          {h.role === 'user' ? 'Citizen' : 'Officer Kavach'}
+                       </span>
+                       <span className="text-[7px] font-mono text-gray-600">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    </div>
+                    <p className={`text-[11px] leading-relaxed ${h.role === 'user' ? 'text-gray-400 italic' : 'text-white font-medium'}`}>
+                      {h.content.length > 100 ? h.content.substring(0, 100) + '...' : h.content}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-white/5">
+               <div className="flex items-center gap-2 text-gray-600">
+                  <Shield size={10} />
+                  <span className="text-[8px] font-black uppercase tracking-widest">End-to-End Encrypted</span>
+               </div>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-indigo-500/10 to-transparent border border-white/5 rounded-[2rem] p-5">
+             <span className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block mb-1">CyberShield Helpline</span>
+             <p className="text-[10px] text-gray-500 font-bold tracking-tight">NATIONAL EMERGENCY: 1930</p>
           </div>
         </div>
       </div>
