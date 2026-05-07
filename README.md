@@ -97,7 +97,7 @@ Built for both **citizens** filing complaints and **officers** managing investig
 | Layer | Technologies |
 |:---|:---|
 | **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, Lucide React, Recharts |
-| **Backend** | Node.js, Express.js, Mongoose, JWT, Nodemailer |
+| **Backend** | Node.js, Express.js, Mongoose, JWT(Json Web Token), Nodemailer |
 | **Database** | MongoDB Atlas (M0 Free Tier) |
 | **AI / ML** | Google Gemini API, HuggingFace Inference API, Zephyr-7B-Beta, FAISS, Sentence-Transformers |
 | **ML Research** | Kaggle Notebook (GPU T4), PyTorch, BitsAndBytes 4-bit quantization |
